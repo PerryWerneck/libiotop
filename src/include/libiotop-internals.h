@@ -60,6 +60,11 @@ You should have received a copy of the GNU General Public License along with thi
 
 		int maxpidlen;
 
+		/// @brief Callback pointers.
+		struct {
+			iotop_update_callback update;
+		} callback;
+
 	};
 
 	struct xxxid_stats_arr {
@@ -86,8 +91,22 @@ You should have received a copy of the GNU General Public License along with thi
 		struct act_stats act;
 	};
 
+	/// @brief Update values.
+	void iotop_view_refresh(iotop_view *view);
+
 	/// @brief Global Handle (temporary)
 	extern iotop * hSession;
+
+	int filter1(struct xxxid_stats *s);
+	void arr_free(struct xxxid_stats_arr *pa);
+
+	typedef int (*filter_callback)(struct xxxid_stats *);
+	struct xxxid_stats_arr *fetch_data(int processes,filter_callback);
+
+	/* vmstat.c */
+
+	int get_vm_counters(uint64_t *pgpgin,uint64_t *pgpgou);
+
 
 
 #endif // LIBIOTOP_INTERNALS_H_INCLUDED

@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <stdio.h>
 #include <string.h>
 
-void calc_total(struct xxxid_stats_arr *cs,double *read,double *write) {
+void calc_total(const struct xxxid_stats_arr *cs,double *read,double *write) {
 	int i;
 
 	*read=*write=0;
@@ -63,7 +63,7 @@ int value2scale(double val,double mx) {
 	return 0;
 }
 
-int create_diff(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,double time_s) {
+int create_diff(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,double time_s) {
 	int diff_size=cs->length;
 	int n=0;
 

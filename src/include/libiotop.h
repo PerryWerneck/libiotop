@@ -77,8 +77,10 @@ You should have received a copy of the GNU General Public License along with thi
 
 	typedef struct _iotop iotop;
 	typedef struct _iotop_view iotop_view;
-	typedef void  (* iotop_callback)(const iotop_view *view);
+	typedef void  (*iotop_update_callback)(iotop_view *view);
 
+	/// @brief Set 'view' method.
+	void iotop_set_update_callback(iotop *hSession, iotop_update_callback callback);
 
 	/// @brief Get library version.
 	const char * iotop_get_version();

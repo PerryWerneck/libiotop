@@ -89,7 +89,7 @@ static const int column_width[]={
 
 #define TIMEDIFF_IN_S(sta,end) ((((sta)==(end))||(sta)==0)?0.0001:(((end)-(sta))/1000.0))
 
-static void view_curses(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,struct act_stats *act,int roll) {
+static void view_curses(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,struct act_stats *act,int roll) {
 	double time_s=TIMEDIFF_IN_S(act->ts_o,act->ts_c);
 	static const uint8_t iohist_z[HISTORY_CNT]={0};
 	int diff_len=create_diff(cs,ps,time_s);
@@ -644,7 +644,17 @@ static int curses_key(int ch) {
 	return 0;
 }
 
+static void curses_update_callback(iotop_view *view) {
+
+	// TODO: Refactory view_curses
+	view_curses(view->cs,view->ps,&view->act,view->refresh);
+}
+
+
 void view_curses_init(void) {
+
+	iotop_set_update_callback(hSession,curses_update_callback);
+
 	if (strcmp(getenv("TERM"),"linux")) {
 		if (setlocale(LC_CTYPE,"C.UTF-8"))
 			has_unicode=1;
@@ -672,7 +682,7 @@ void view_curses_loop(void) {
 	iotop_view view;
 	memset(&view,0,sizeof(view));
 
-	uint64_t bef=0;
+	uint64_t bef = 0;
 	int k=ERR;
 
 	for (;;) {
@@ -680,34 +690,22 @@ void view_curses_loop(void) {
 
 		if (bef+1000*hSession->param.p.delay<now) {
 			bef=now;
-			if (view.ps)
-				arr_free(view.ps);
-
-			view.ps = view.cs;
-			view.act.read_bytes_o=view.act.read_bytes;
-			view.act.write_bytes_o=view.act.write_bytes;
-			if (view.act.ts_c)
-				view.act.have_o=1;
-			view.act.ts_o=view.act.ts_c;
-
-			view.cs=fetch_data(hSession->config.f.processes,filter1);
-			if (!view.ps) {
-				view.ps=view.cs;
-				view.cs=fetch_data(hSession->config.f.processes,filter1);
-			}
-			get_vm_counters(&view.act.read_bytes,&view.act.write_bytes);
+			iotop_view_refresh(&view);
 			view.act.ts_c=now;
-			view.refresh=1;
 		}
+
 		if (view.refresh&&k==ERR)
 			k=KEY_REFRESH;
+
 		if (k!=ERR) {
 			int kres;
 
 			if ((kres=curses_key(k))>0)
 				break;
+
 			if (kres==0) {
-				view_curses(view.cs,view.ps,&view.act,view.refresh);
+				if(hSession->callback.update)
+					hSession->callback.update(&view);
 				view.refresh=0;
 			}
 		}

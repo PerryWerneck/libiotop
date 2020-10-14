@@ -126,9 +126,7 @@ void nl_fini(void);
 
 int nl_xxxid_info(pid_t xxxid,struct xxxid_stats *stats);
 
-typedef int (*filter_callback)(struct xxxid_stats *);
 
-struct xxxid_stats_arr *fetch_data(int processes,filter_callback);
 void free_stats(struct xxxid_stats *s);
 
 typedef void (*view_loop)(void);
@@ -210,10 +208,6 @@ int set_ioprio(int which,int who,int ioprio_class,int ioprio_prio);
 int ioprio2class(int ioprio);
 int ioprio2prio(int ioprio);
 
-/* vmstat.c */
-
-int get_vm_counters(uint64_t *pgpgin,uint64_t *pgpgou);
-
 /* checks.c */
 
 int system_checks(void);
@@ -223,19 +217,17 @@ int system_checks(void);
 struct xxxid_stats_arr *arr_alloc(void);
 int arr_add(struct xxxid_stats_arr *a,struct xxxid_stats *s);
 struct xxxid_stats *arr_find(struct xxxid_stats_arr *pa,pid_t tid);
-void arr_free(struct xxxid_stats_arr *pa);
 void arr_sort(struct xxxid_stats_arr *pa,int (*cb)(const void *a,const void *b));
 
 #define HEADER1_FORMAT "  Total DISK READ: %7.2f %s%s |   Total DISK WRITE: %7.2f %s%s"
 #define HEADER2_FORMAT "Current DISK READ: %7.2f %s%s | Current DISK WRITE: %7.2f %s%s"
 
-void calc_total(struct xxxid_stats_arr *cs,double *read,double *write);
+void calc_total(const struct xxxid_stats_arr *cs,double *read,double *write);
 void calc_a_total(struct act_stats *act,double *read,double *write,double time_s);
 void humanize_val(double *value,char *str,int allow_accum);
 int iotop_sort_cb(const void *a,const void *b);
-int create_diff(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,double time_s);
+int create_diff(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,double time_s);
 int value2scale(double val,double mx);
-int filter1(struct xxxid_stats *s);
 
 #ifndef KEY_CTRL_L
 #define KEY_CTRL_L 014

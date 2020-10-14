@@ -12,32 +12,30 @@ You should have received a copy of the GNU General Public License along with thi
 */
 
 /**
- * @brief Get/Set iotop properties.
+ * @brief Update stats.
  *
  */
 
  #include <libiotop-internals.h>
 
- void iotop_set_flag(iotop *handle, IOTOP_FLAG flag, int value) {
-	handle->config.opts[flag] = value;
- }
+ void iotop_view_refresh(iotop_view *view) {
 
- int iotop_get_flag(iotop *handle, IOTOP_FLAG flag) {
- 	return handle->config.opts[flag];
- }
+	if (view->ps)
+		arr_free(view->ps);
 
- const char * iotop_get_version() {
-	return PACKAGE_VERSION;
- }
+	view->ps = view->cs;
+	view->act.read_bytes_o=view->act.read_bytes;
+	view->act.write_bytes_o=view->act.write_bytes;
+	if (view->act.ts_c)
+		view->act.have_o=1;
+	view->act.ts_o=view->act.ts_c;
 
- void iotop_set_param(iotop *handle, IOTOP_PARAM param, int value) {
-	handle->param.params[param] = value;
- }
+	view->cs=fetch_data(hSession->config.f.processes,filter1);
+	if (!view->ps) {
+		view->ps=view->cs;
+		view->cs=fetch_data(hSession->config.f.processes,filter1);
+	}
+	get_vm_counters(&view->act.read_bytes,&view->act.write_bytes);
+	view->refresh=1;
+}
 
- void iotop_set_update_callback(iotop *hSession, iotop_update_callback callback) {
-	hSession->callback.update = callback;
- }
-
- int iotop_get_param(iotop *handle, IOTOP_PARAM param) {
- 	return handle->param.params[param];
- }
