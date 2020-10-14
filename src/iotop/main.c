@@ -24,21 +24,23 @@ You should have received a copy of the GNU General Public License along with thi
 #include <sys/types.h>
 
 static const char *progname=NULL;
-int maxpidlen=5;
+// int maxpidlen=5;
 
-config_t config;
-params_t params;
+//config_t config;
+//params_t params;
 
 view_init v_init_cb=view_curses_init;
 view_fini v_fini_cb=view_curses_fini;
 view_loop v_loop_cb=view_curses_loop;
 
+/*
 void init_params(void) {
 	params.iter=-1;
 	params.delay=1;
 	params.pid=-1;
 	params.user_id=-1;
 }
+*/
 
 static const char str_opt[]="boPaktqHc123456789";
 
@@ -83,10 +85,11 @@ static void print_help(void) {
 }
 
 static void parse_args(int argc,char *argv[]) {
-	init_params();
-	memset(&config,0,sizeof(config));
-	config.f.sort_by=SORT_BY_GRAPH;
-	config.f.sort_order=SORT_DESC;
+//	init_params();
+//	memset(&config,0,sizeof(config));
+//	config.f.sort_by=SORT_BY_GRAPH;
+//	config.f.sort_order=SORT_DESC;
+//	config.f.hidegraph = 1;
 
 	while (1) {
 		static struct option long_options[]={
@@ -147,20 +150,20 @@ static void parse_args(int argc,char *argv[]) {
 			case 'H':
 			case 'c':
 			case '1' ... '9':
-				config.opts[(unsigned int)(strchr(str_opt,c)-str_opt)]=1;
+				iotop_set_flag(hSession,(IOTOP_FLAG) (strchr(str_opt,c)-str_opt),1);
 				break;
 			case 'n':
-				params.iter=atoi(optarg);
+				hSession->params.iter=atoi(optarg);
 				break;
 			case 'd':
-				params.delay=atoi(optarg);
+				hSession->params.delay=atoi(optarg);
 				break;
 			case 'p':
-				params.pid=atoi(optarg);
+				hSession->params.pid=atoi(optarg);
 				break;
 			case 'u':
 				if (isdigit(optarg[0]))
-					params.user_id=atoi(optarg);
+					hSession->params.user_id=atoi(optarg);
 				else {
 					struct passwd *pwd=getpwnam(optarg);
 
@@ -168,7 +171,7 @@ static void parse_args(int argc,char *argv[]) {
 						fprintf(stderr,"%s: user %s not found\n",progname,optarg);
 						exit(EXIT_FAILURE);
 					}
-					params.user_id=pwd->pw_uid;
+					hSession->params.user_id=pwd->pw_uid;
 				}
 				break;
 			default:
@@ -186,6 +189,9 @@ void sig_handler(int signo) {
 }
 
 int main(int argc,char *argv[]) {
+
+	iotop * session = iotop_new();
+
 	progname=argv[0];
 
 	parse_args(argc,argv);
@@ -198,10 +204,10 @@ int main(int argc,char *argv[]) {
 	if (signal(SIGINT,sig_handler)==SIG_ERR)
 		perror("signal");
 
-	if (config.f.timestamp||config.f.quiet)
-		config.f.batch_mode=1;
+	if (hSession->config.f.timestamp||hSession->config.f.quiet)
+		hSession->config.f.batch_mode=1;
 
-	if (config.f.batch_mode) {
+	if (hSession->config.f.batch_mode) {
 		v_init_cb=view_batch_init;
 		v_fini_cb=view_batch_fini;
 		v_loop_cb=view_batch_loop;
@@ -211,6 +217,8 @@ int main(int argc,char *argv[]) {
 	v_loop_cb();
 	v_fini_cb();
 	nl_fini();
+
+	iotop_free(session);
 
 	return 0;
 }

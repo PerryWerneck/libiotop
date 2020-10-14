@@ -27,8 +27,11 @@ You should have received a copy of the GNU General Public License along with thi
 #include <sys/types.h>
 #include <stdint.h>
 
+#include <libiotop-internals.h> // TODO: Remove it after migration
+
 #define VERSION "1.15"
 
+/*
 typedef union {
 	struct _flags {
 		int batch_mode;
@@ -54,17 +57,20 @@ typedef union {
 	} f;
 	int opts[18];
 } config_t;
+*/
 
+/*
 typedef struct {
 	int iter;
 	int delay;
 	int pid;
 	int user_id;
 } params_t;
+*/
 
-extern config_t config;
-extern params_t params;
-extern int maxpidlen;
+//extern config_t config;
+//extern params_t params;
+//extern int maxpidlen;
 
 
 #define HISTORY_POS 60

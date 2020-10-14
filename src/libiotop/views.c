@@ -22,7 +22,7 @@ void calc_total(struct xxxid_stats_arr *cs,double *read,double *write) {
 	*read=*write=0;
 
 	for (i=0;i<cs->length;i++) {
-		if (!config.f.accumulated) {
+		if (!hSession->config.f.accumulated) {
 			*read+=cs->arr[i]->read_val;
 			*write+=cs->arr[i]->write_val;
 		} else {
@@ -85,7 +85,7 @@ int create_diff(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,double tim
 			c->write_val_acc=0;
 
 			snprintf(temp,sizeof temp,"%i",c->tid);
-			maxpidlen=maxpidlen<(int)strlen(temp)?(int)strlen(temp):maxpidlen;
+			hSession->maxpidlen=hSession->maxpidlen<(int)strlen(temp)?(int)strlen(temp):hSession->maxpidlen;
 			continue;
 		}
 
@@ -111,7 +111,7 @@ int create_diff(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,double tim
 		c->iohist[0]=value2scale(c->blkio_val,100.0);
 
 		snprintf(temp,sizeof temp,"%i",c->tid);
-		maxpidlen=maxpidlen<(int)strlen(temp)?(int)strlen(temp):maxpidlen;
+		hSession->maxpidlen=hSession->maxpidlen<(int)strlen(temp)?(int)strlen(temp):hSession->maxpidlen;
 	}
 
 	return diff_size;
@@ -121,7 +121,7 @@ void humanize_val(double *value,char *str,int allow_accum) {
 	const char *u="BKMGTPEZY";
 	size_t p=0;
 
-	if (config.f.kilobytes) {
+	if (hSession->config.f.kilobytes) {
 		p=1;
 		*value/=1000.0;
 	} else {
@@ -134,15 +134,15 @@ void humanize_val(double *value,char *str,int allow_accum) {
 		}
 	}
 
-	snprintf(str,4,"%c%s",u[p],config.f.accumulated&&allow_accum?"  ":"/s");
+	snprintf(str,4,"%c%s",u[p],hSession->config.f.accumulated&&allow_accum?"  ":"/s");
 }
 
 int iotop_sort_cb(const void *a,const void *b) {
-	int order=config.f.sort_order?1:-1; // SORT_ASC is bit 0=1, else should reverse sort
+	int order=hSession->config.f.sort_order?1:-1; // SORT_ASC is bit 0=1, else should reverse sort
 	struct xxxid_stats **ppa=(struct xxxid_stats **)a;
 	struct xxxid_stats **ppb=(struct xxxid_stats **)b;
 	struct xxxid_stats *pa,*pb;
-	int type=config.f.sort_by;
+	int type=hSession->config.f.sort_by;
 	static int grlen=0;
 	int res=0;
 
@@ -172,7 +172,7 @@ int iotop_sort_cb(const void *a,const void *b) {
 			res=pa->io_prio-pb->io_prio;
 			break;
 		case SORT_BY_COMMAND:
-			res=strcmp(config.f.fullcmdline?pa->cmdline2:pa->cmdline1,config.f.fullcmdline?pb->cmdline2:pb->cmdline1);
+			res=strcmp(hSession->config.f.fullcmdline?pa->cmdline2:pa->cmdline1,hSession->config.f.fullcmdline?pb->cmdline2:pb->cmdline1);
 			break;
 		case SORT_BY_PID:
 			res=pa->tid-pb->tid;
@@ -181,13 +181,13 @@ int iotop_sort_cb(const void *a,const void *b) {
 			res=strcmp(pa->pw_name,pb->pw_name);
 			break;
 		case SORT_BY_READ:
-			if (config.f.accumulated)
+			if (hSession->config.f.accumulated)
 				res=pa->read_val_acc>pb->read_val_acc?1:pa->read_val_acc<pb->read_val_acc?-1:0;
 			else
 				res=pa->read_val>pb->read_val?1:pa->read_val<pb->read_val?-1:0;
 			break;
 		case SORT_BY_WRITE:
-			if (config.f.accumulated)
+			if (hSession->config.f.accumulated)
 				res=pa->write_val_acc>pb->write_val_acc?1:pa->write_val_acc<pb->write_val_acc?-1:0;
 			else
 				res=pa->write_val>pb->write_val?1:pa->write_val<pb->write_val?-1:0;
@@ -204,10 +204,10 @@ int iotop_sort_cb(const void *a,const void *b) {
 }
 
 int filter1(struct xxxid_stats *s) {
-	if ((params.user_id!=-1)&&(s->euid!=params.user_id))
+	if ((hSession->params.user_id!=-1)&&(s->euid!=hSession->params.user_id))
 		return 1;
 
-	if ((params.pid!=-1)&&(s->tid!=params.pid))
+	if ((hSession->params.pid!=-1)&&(s->tid!=hSession->params.pid))
 		return 1;
 
 	return 0;

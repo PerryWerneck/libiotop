@@ -20,23 +20,20 @@
 				<Option object_output=".obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Compiler>
-					<Add option="-O2" />
-				</Compiler>
-				<Linker>
-					<Add option="-s" />
-				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-Wall" />
 			<Add option="`pkg-config --cflags ncurses`" />
+			<Add option="-std=gnu90 -Wall -Wextra" />
+			<Add option="-O3 -fno-stack-protector -mno-stackrealign" />
 			<Add directory="src/include" />
 		</Compiler>
 		<Linker>
 			<Add option="`pkg-config --libs ncurses`" />
 		</Linker>
 		<Unit filename="src/include/iotop.h" />
+		<Unit filename="src/include/libiotop-internals.h" />
+		<Unit filename="src/include/libiotop.h" />
 		<Unit filename="src/iotop/main.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -44,6 +41,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/iotop/view_curses.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/libiotop/allocate.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/libiotop/arr.c">
