@@ -34,10 +34,17 @@ You should have received a copy of the GNU General Public License along with thi
 	handle->param.params[param] = value;
  }
 
- void iotop_set_update_callback(iotop *hSession, iotop_update_callback callback) {
-	hSession->callback.update = callback;
+ void iotop_set_presentation_method(iotop *hSession, iotop_presentation_method callback) {
+	hSession->callback.presentation = callback;
  }
 
  int iotop_get_param(iotop *handle, IOTOP_PARAM param) {
  	return handle->param.params[param];
+ }
+
+ void iotop_present(iotop *hSession) {
+	if(hSession->callback.presentation) {
+		hSession->callback.presentation(&hSession->view);
+	}
+	hSession->view.refresh=0;
  }

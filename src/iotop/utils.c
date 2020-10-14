@@ -11,32 +11,45 @@ You should have received a copy of the GNU General Public License along with thi
 
 */
 
-/**
- * @brief Update stats.
- *
- */
+#include "iotop.h"
 
- #include <libiotop-internals.h>
+#include <time.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <wchar.h>
+#include <dirent.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
- int iotop_view_refresh(iotop_view *view) {
+int64_t monotime(void) {
+	struct timespec ts;
+	int64_t res;
 
-	if (view->ps)
-		arr_free(view->ps);
-
-	view->ps = view->cs;
-	view->act.read_bytes_o=view->act.read_bytes;
-	view->act.write_bytes_o=view->act.write_bytes;
-	if (view->act.ts_c)
-		view->act.have_o=1;
-	view->act.ts_o=view->act.ts_c;
-
-	view->cs=fetch_data(hSession->config.f.processes,filter1);
-	if (!view->ps) {
-		view->ps=view->cs;
-		view->cs=fetch_data(hSession->config.f.processes,filter1);
-	}
-	get_vm_counters(&view->act.read_bytes,&view->act.write_bytes);
-
-	return view->refresh=1;
+	clock_gettime(CLOCK_MONOTONIC,&ts);
+	res=ts.tv_sec*1000;
+	res+=ts.tv_nsec/1000000;
+	return res;
 }
 
+void humanize_val(double *value,char *str,int allow_accum) {
+	const char *u="BKMGTPEZY";
+	size_t p=0;
+
+	if (hSession->config.f.kilobytes) {
+		p=1;
+		*value/=1000.0;
+	} else {
+		while (*value>10000) {
+			if (p+1<strlen(u)) {
+				*value/=1000.0;
+				p++;
+			} else
+				break;
+		}
+	}
+
+	snprintf(str,4,"%c%s",u[p],hSession->config.f.accumulated&&allow_accum?"  ":"/s");
+}

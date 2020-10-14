@@ -11,7 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 */
 
-#include <iotop.h>
+#include <libiotop-internals.h>
 
 #include <pwd.h>
 #include <errno.h>
@@ -42,9 +42,6 @@ struct msgtemplate {
 	struct genlmsghdr g;
 	char buf[MAX_MSG_SIZE];
 };
-
-static int nl_sock=-1;
-static int nl_fam_id=0;
 
 int send_cmd(int sock_fd,__u16 nlmsg_type,__u32 nlmsg_pid,__u8 genl_cmd,__u16 nla_type,void *nla_data,int nla_len) {
 	struct nlattr *na;
@@ -115,7 +112,7 @@ int get_family_id(int sock_fd) {
 	return id;
 }
 
-void nl_init(void) {
+void nl_init(iotop *handle) {
 	struct sockaddr_nl addr;
 	int sock_fd=socket(PF_NETLINK,SOCK_RAW,NETLINK_GENERIC);
 
@@ -128,8 +125,8 @@ void nl_init(void) {
 	if (bind(sock_fd,(struct sockaddr *)&addr,sizeof(addr))<0)
 		goto error;
 
-	nl_sock=sock_fd;
-	nl_fam_id=get_family_id(sock_fd);
+	handle->nl_sock=sock_fd;
+	handle->nl_fam_id=get_family_id(sock_fd);
 
 	return;
 
@@ -142,12 +139,12 @@ error:
 }
 
 int nl_xxxid_info(pid_t xxxid,struct xxxid_stats *stats) {
-	if (nl_sock<0) {
+	if (hSession->nl_sock<0) {
 		perror("nl_xxxid_info");
 		exit(EXIT_FAILURE);
 	}
 
-	if (send_cmd(nl_sock,nl_fam_id,xxxid,TASKSTATS_CMD_GET,TASKSTATS_CMD_ATTR_PID,&xxxid,sizeof(pid_t))) {
+	if (send_cmd(hSession->nl_sock,hSession->nl_fam_id,xxxid,TASKSTATS_CMD_GET,TASKSTATS_CMD_ATTR_PID,&xxxid,sizeof(pid_t))) {
 		fprintf(stderr,"get_xxxid_info: %s\n",strerror(errno));
 		return -1;
 	}
@@ -155,7 +152,7 @@ int nl_xxxid_info(pid_t xxxid,struct xxxid_stats *stats) {
 	stats->tid=xxxid;
 
 	struct msgtemplate msg;
-	ssize_t rv=recv(nl_sock,&msg,sizeof(msg),0);
+	ssize_t rv=recv(hSession->nl_sock,&msg,sizeof(msg),0);
 
 	if (msg.n.nlmsg_type==NLMSG_ERROR||!NLMSG_OK((&msg.n),rv)) {
 		struct nlmsgerr *err=NLMSG_DATA(&msg);
@@ -201,9 +198,9 @@ int nl_xxxid_info(pid_t xxxid,struct xxxid_stats *stats) {
 	return 0;
 }
 
-void nl_fini(void) {
-	if (nl_sock>-1)
-		close(nl_sock);
+void nl_fini(iotop *handle) {
+	if (handle->nl_sock>-1)
+		close(handle->nl_sock);
 }
 
 void free_stats(struct xxxid_stats *s) {

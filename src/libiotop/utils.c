@@ -11,7 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 */
 
-#include <iotop.h>
+#include <libiotop-internals.h>
 
 #include <time.h>
 #include <fcntl.h>
@@ -189,16 +189,6 @@ int pidgen_next(struct pidgen *pg) {
 	}
 
 	return pid;
-}
-
-int64_t monotime(void) {
-	struct timespec ts;
-	int64_t res;
-
-	clock_gettime(CLOCK_MONOTONIC,&ts);
-	res=ts.tv_sec*1000;
-	res+=ts.tv_nsec/1000000;
-	return res;
 }
 
 #define UBLEN 1024

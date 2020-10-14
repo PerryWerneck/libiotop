@@ -91,6 +91,7 @@ install: $(TARGET)
 	$(Q)install -TD -m 0755 $(TARGET) $(DESTDIR)/$(libdir)/$(PACKAGE_NAME).so.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@
 	$(Q)ln -sf $(PACKAGE_NAME).so.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@ $(DESTDIR)$(libdir)/$(PACKAGE_NAME).so
 	$(Q)install -TD -m 0644 @BASEDIR@/src/include/libiotop.h $(DESTDIR)$(includedir)/libiotop.h
+	$(Q)install -TD -m 0644 libiotop.pc $(DESTDIR)$(libdir)/pkgconfig/libiotop.pc
 
 uninstall:
 	$(E) UNINSTALL $(TARGET)

@@ -41,6 +41,8 @@ You should have received a copy of the GNU General Public License along with thi
 	handle->param.p.user_id=-1;
 
 	handle->maxpidlen = 5;
+	handle->nl_sock = -1;
+	nl_init(handle);
 
 	// Store on global
 	hSession = handle;
@@ -52,6 +54,7 @@ You should have received a copy of the GNU General Public License along with thi
 
  void iotop_free(iotop *handle) {
 
+	nl_fini(handle);
 	free(handle);
  }
 

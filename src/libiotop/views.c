@@ -11,7 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 */
 
-#include <iotop.h>
+#include <libiotop-internals.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -117,26 +117,6 @@ int create_diff(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,double ti
 	return diff_size;
 }
 
-void humanize_val(double *value,char *str,int allow_accum) {
-	const char *u="BKMGTPEZY";
-	size_t p=0;
-
-	if (hSession->config.f.kilobytes) {
-		p=1;
-		*value/=1000.0;
-	} else {
-		while (*value>10000) {
-			if (p+1<strlen(u)) {
-				*value/=1000.0;
-				p++;
-			} else
-				break;
-		}
-	}
-
-	snprintf(str,4,"%c%s",u[p],hSession->config.f.accumulated&&allow_accum?"  ":"/s");
-}
-
 int iotop_sort_cb(const void *a,const void *b) {
 	int order=hSession->config.f.sort_order?1:-1; // SORT_ASC is bit 0=1, else should reverse sort
 	struct xxxid_stats **ppa=(struct xxxid_stats **)a;
@@ -155,7 +135,7 @@ int iotop_sort_cb(const void *a,const void *b) {
 	pb=*ppb;
 
 	switch (type) {
-		case SORT_BY_GRAPH: {
+		case IOTOP_SORT_BY_GRAPH: {
 			int aa=0,ab=0;
 			int i;
 
@@ -168,34 +148,34 @@ int iotop_sort_cb(const void *a,const void *b) {
 			res=aa-ab;
 			break;
 		}
-		case SORT_BY_PRIO:
+		case IOTOP_SORT_BY_PRIO:
 			res=pa->io_prio-pb->io_prio;
 			break;
-		case SORT_BY_COMMAND:
+		case IOTOP_SORT_BY_COMMAND:
 			res=strcmp(hSession->config.f.fullcmdline?pa->cmdline2:pa->cmdline1,hSession->config.f.fullcmdline?pb->cmdline2:pb->cmdline1);
 			break;
-		case SORT_BY_PID:
+		case IOTOP_SORT_BY_PID:
 			res=pa->tid-pb->tid;
 			break;
-		case SORT_BY_USER:
+		case IOTOP_SORT_BY_USER:
 			res=strcmp(pa->pw_name,pb->pw_name);
 			break;
-		case SORT_BY_READ:
+		case IOTOP_SORT_BY_READ:
 			if (hSession->config.f.accumulated)
 				res=pa->read_val_acc>pb->read_val_acc?1:pa->read_val_acc<pb->read_val_acc?-1:0;
 			else
 				res=pa->read_val>pb->read_val?1:pa->read_val<pb->read_val?-1:0;
 			break;
-		case SORT_BY_WRITE:
+		case IOTOP_SORT_BY_WRITE:
 			if (hSession->config.f.accumulated)
 				res=pa->write_val_acc>pb->write_val_acc?1:pa->write_val_acc<pb->write_val_acc?-1:0;
 			else
 				res=pa->write_val>pb->write_val?1:pa->write_val<pb->write_val?-1:0;
 			break;
-		case SORT_BY_SWAPIN:
+		case IOTOP_SORT_BY_SWAPIN:
 			res=pa->swapin_val>pb->swapin_val?1:pa->swapin_val<pb->swapin_val?-1:0;
 			break;
-		case SORT_BY_IO:
+		case IOTOP_SORT_BY_IO:
 			res=pa->blkio_val>pb->blkio_val?1:pa->blkio_val<pb->blkio_val?-1:0;
 			break;
 	}

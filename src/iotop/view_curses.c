@@ -11,7 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 */
 
-#include <iotop.h>
+#include "iotop.h"
 
 // allow ncurses printf-like arguments checking
 #define GCC_PRINTF
@@ -81,11 +81,11 @@ static const int column_width[]={
 };
 
 #define __COLUMN_NAME(i) ((i)==0?(hSession->config.f.processes?"PID":"TID"):column_name[(i)])
-#define __SAFE_INDEX(i) ((((i)%SORT_BY_MAX)+SORT_BY_MAX)%SORT_BY_MAX)
+#define __SAFE_INDEX(i) ((((i)%IOTOP_SORT_BY_MAX)+IOTOP_SORT_BY_MAX)%IOTOP_SORT_BY_MAX)
 #define COLUMN_NAME(i) __COLUMN_NAME(__SAFE_INDEX(i))
 #define COLUMN_L(i) COLUMN_NAME((i)-1)
 #define COLUMN_R(i) COLUMN_NAME((i)+1)
-#define SORT_CHAR(x) ((hSession->config.f.sort_by==x)?(hSession->config.f.sort_order==SORT_ASC?'<':'>'):' ')
+#define SORT_CHAR(x) ((hSession->config.f.sort_by==x)?(hSession->config.f.sort_order==IOTOP_SORT_ASC?'<':'>'):' ')
 
 #define TIMEDIFF_IN_S(sta,end) ((((sta)==(end))||(sta)==0)?0.0001:(((end)-(sta))/1000.0))
 
@@ -145,17 +145,17 @@ static void view_curses(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,s
 	if (!hSession->config.f.hidepid)
 		maxcmdline-=hSession->maxpidlen+2;
 	if (!hSession->config.f.hideprio)
-		maxcmdline-=column_width[SORT_BY_PRIO];
+		maxcmdline-=column_width[IOTOP_SORT_BY_PRIO];
 	if (!hSession->config.f.hideuser)
-		maxcmdline-=column_width[SORT_BY_USER];
+		maxcmdline-=column_width[IOTOP_SORT_BY_USER];
 	if (!hSession->config.f.hideread)
-		maxcmdline-=column_width[SORT_BY_READ];
+		maxcmdline-=column_width[IOTOP_SORT_BY_READ];
 	if (!hSession->config.f.hidewrite)
-		maxcmdline-=column_width[SORT_BY_WRITE];
+		maxcmdline-=column_width[IOTOP_SORT_BY_WRITE];
 	if (!hSession->config.f.hideswapin)
-		maxcmdline-=column_width[SORT_BY_SWAPIN];
+		maxcmdline-=column_width[IOTOP_SORT_BY_SWAPIN];
 	if (!hSession->config.f.hideio)
-		maxcmdline-=column_width[SORT_BY_IO];
+		maxcmdline-=column_width[IOTOP_SORT_BY_IO];
 	gr_width=maxcmdline/4;
 	if (gr_width<5)
 		gr_width=5;
@@ -320,15 +320,15 @@ static void view_curses(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,s
 	mvhline(ionicepos+1,0,' ',maxx);
 	move(ionicepos+1,0);
 
-	for (i=0;i<SORT_BY_MAX;i++) {
+	for (i=0;i<IOTOP_SORT_BY_MAX;i++) {
 		int wt,wi=column_width[i];
 		char t[50];
 
-		if (i==SORT_BY_PID)
+		if (i==IOTOP_SORT_BY_PID)
 			wi=hSession->maxpidlen+2;
-		if (i==SORT_BY_GRAPH)
+		if (i==IOTOP_SORT_BY_GRAPH)
 			wi=gr_width+1;
-		if (i==SORT_BY_COMMAND)
+		if (i==IOTOP_SORT_BY_COMMAND)
 			wi=maxcmdline;
 
 		if (hSession->config.opts[&hSession->config.f.hidepid-hSession->config.opts+i])
@@ -459,7 +459,7 @@ static void view_curses(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,s
 		attron(A_UNDERLINE);
 		printw("r");
 		attroff(A_UNDERLINE);
-		printw(": %s ",hSession->config.f.sort_order==SORT_ASC?"desc":"asc");
+		printw(": %s ",hSession->config.f.sort_order==IOTOP_SORT_ASC?"desc":"asc");
 		attron(A_UNDERLINE);
 		printw("left");
 		attroff(A_UNDERLINE);
@@ -503,7 +503,7 @@ static int curses_key(int ch) {
 		case ' ':
 		case 'r':
 		case 'R':
-			hSession->config.f.sort_order=(hSession->config.f.sort_order==SORT_ASC)?SORT_DESC:SORT_ASC;
+			hSession->config.f.sort_order=(hSession->config.f.sort_order==IOTOP_SORT_ASC)?IOTOP_SORT_DESC:IOTOP_SORT_ASC;
 			break;
 		case KEY_HOME:
 			if (in_ionice)
@@ -515,21 +515,21 @@ static int curses_key(int ch) {
 			if (in_ionice)
 				ionice_cl=0;
 			else
-				hSession->config.f.sort_by=SORT_BY_MAX-1;
+				hSession->config.f.sort_by=IOTOP_SORT_BY_MAX-1;
 			break;
 		case KEY_RIGHT:
 			if (in_ionice)
 				ionice_cl=!ionice_cl;
 			else
-				if (++hSession->config.f.sort_by==SORT_BY_MAX)
-					hSession->config.f.sort_by=SORT_BY_PID;
+				if (++hSession->config.f.sort_by==IOTOP_SORT_BY_MAX)
+					hSession->config.f.sort_by=IOTOP_SORT_BY_PID;
 			break;
 		case KEY_LEFT:
 			if (in_ionice)
 				ionice_cl=!ionice_cl;
 			else
 				if (--hSession->config.f.sort_by==-1)
-					hSession->config.f.sort_by=SORT_BY_MAX-1;
+					hSession->config.f.sort_by=IOTOP_SORT_BY_MAX-1;
 			break;
 		case KEY_UP:
 			if (in_ionice) {
@@ -653,7 +653,7 @@ static void curses_update_callback(iotop_view *view) {
 
 void view_curses_init(void) {
 
-	iotop_set_update_callback(hSession,curses_update_callback);
+	iotop_set_presentation_method(hSession,curses_update_callback);
 
 	if (strcmp(getenv("TERM"),"linux")) {
 		if (setlocale(LC_CTYPE,"C.UTF-8"))
@@ -679,22 +679,23 @@ void view_curses_fini(void) {
 
 void view_curses_loop(void) {
 
-	iotop_view view;
-	memset(&view,0,sizeof(view));
+	iotop_view * view = &hSession->view;
+	memset(view,0,sizeof(iotop_view));
 
 	uint64_t bef = 0;
 	int k=ERR;
+	int refresh = 0;
 
 	for (;;) {
 		uint64_t now=monotime();
 
 		if (bef+1000*hSession->param.p.delay<now) {
 			bef=now;
-			iotop_view_refresh(&view);
-			view.act.ts_c=now;
+			refresh = iotop_view_refresh(view);
+			view->act.ts_c=now;
 		}
 
-		if (view.refresh&&k==ERR)
+		if (refresh&&k==ERR)
 			k=KEY_REFRESH;
 
 		if (k!=ERR) {
@@ -704,9 +705,7 @@ void view_curses_loop(void) {
 				break;
 
 			if (kres==0) {
-				if(hSession->callback.update)
-					hSession->callback.update(&view);
-				view.refresh=0;
+				iotop_present(hSession);
 			}
 		}
 		if ((hSession->param.p.iter>-1)&&((--hSession->param.p.iter)==0))

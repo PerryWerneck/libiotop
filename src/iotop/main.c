@@ -11,7 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 */
 
-#include <iotop.h>
+#include "iotop.h"
 
 #include <pwd.h>
 #include <ctype.h>
@@ -183,14 +183,12 @@ static void parse_args(int argc,char *argv[]) {
 void sig_handler(int signo) {
 	if (signo==SIGINT) {
 		v_fini_cb();
-		nl_fini();
+		iotop_free(hSession);
 		exit(EXIT_SUCCESS);
 	}
 }
 
 int main(int argc,char *argv[]) {
-
-	iotop * session = iotop_new();
 
 	progname=argv[0];
 
@@ -199,7 +197,8 @@ int main(int argc,char *argv[]) {
 		return EXIT_FAILURE;
 
 	setlocale(LC_ALL,"");
-	nl_init();
+
+	iotop * session = iotop_new();
 
 	if (signal(SIGINT,sig_handler)==SIG_ERR)
 		perror("signal");
@@ -216,7 +215,6 @@ int main(int argc,char *argv[]) {
 	v_init_cb();
 	v_loop_cb();
 	v_fini_cb();
-	nl_fini();
 
 	iotop_free(session);
 

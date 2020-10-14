@@ -167,7 +167,7 @@ dnl Configure which files to generate.
 dnl ---------------------------------------------------------------------------
 
 AC_CONFIG_FILES(src/libiotop/Makefile)
-dnl AC_CONFIG_FILES(src/libiotop/libiotop.pc)
+AC_CONFIG_FILES(src/libiotop/libiotop.pc)
 
 dnl ---------------------------------------------------------------------------
 dnl Output the generated config.status script.

@@ -20,6 +20,9 @@ You should have received a copy of the GNU General Public License along with thi
 
 	#define LIBIOTOP_H_INCLUDED
 
+	#define IOTOP_API		__attribute__((visibility("default")))
+	#define IOTOP_PRIVATE	__attribute__((visibility("hidden")))
+
 	/// @brief Options.
 	typedef enum iotop_flag {
 		iotop_batch_mode,
@@ -77,33 +80,34 @@ You should have received a copy of the GNU General Public License along with thi
 
 	typedef struct _iotop iotop;
 	typedef struct _iotop_view iotop_view;
-	typedef void  (*iotop_update_callback)(iotop_view *view);
+	typedef void  (*iotop_presentation_method)(iotop_view *view);
 
 	/// @brief Set 'view' method.
-	void iotop_set_update_callback(iotop *hSession, iotop_update_callback callback);
+	IOTOP_API void iotop_set_presentation_method(iotop *hSession, const iotop_presentation_method callback);
+
+	/// @brief Present
+	IOTOP_API void iotop_present(iotop *hSession);
 
 	/// @brief Get library version.
-	const char * iotop_get_version();
+	IOTOP_API const char * iotop_get_version();
 
 	/// @brief Initialize a new iotop session.
-	iotop 	* iotop_new();
+	IOTOP_API iotop 	* iotop_new();
 
 	/// @brief Ends iotop session, release memory.
-	void	  iotop_free(iotop *handle);
+	IOTOP_API void	  iotop_free(iotop *handle);
 
 	/// @brief Set flag.
-	void	  iotop_set_flag(iotop *handle, IOTOP_FLAG flag, int value);
+	IOTOP_API void	  iotop_set_flag(iotop *handle, IOTOP_FLAG flag, int value);
 
 	/// @brief Get flag.
-	int 	  iotop_get_flag(iotop *handle, IOTOP_FLAG flag);
+	IOTOP_API int 	  iotop_get_flag(iotop *handle, IOTOP_FLAG flag);
 
 	/// @brief Set param.
-	void	  iotop_set_param(iotop *handle, IOTOP_PARAM param, int value);
+	IOTOP_API void	  iotop_set_param(iotop *handle, IOTOP_PARAM param, int value);
 
 	/// @brief Get param.
-	int 	  iotop_get_param(iotop *handle, IOTOP_PARAM param);
-
-
+	IOTOP_API int 	  iotop_get_param(iotop *handle, IOTOP_PARAM param);
 
 
 #endif // LIBIOTOP_H_INCLUDED

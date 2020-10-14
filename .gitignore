@@ -1,6 +1,5 @@
 bld
 *.swp
-iotop
 *.bak
 *.layout
 .bin
@@ -15,4 +14,4 @@ configure
 scripts
 stamp-h1
 Makefile
-
+*.pc

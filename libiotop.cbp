@@ -31,10 +31,13 @@
 		<Linker>
 			<Add option="`pkg-config --libs ncurses`" />
 		</Linker>
-		<Unit filename="src/include/iotop.h" />
 		<Unit filename="src/include/libiotop-internals.h" />
 		<Unit filename="src/include/libiotop.h" />
+		<Unit filename="src/iotop/iotop.h" />
 		<Unit filename="src/iotop/main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/iotop/utils.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/iotop/view_batch.c">
