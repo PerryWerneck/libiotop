@@ -1,4 +1,4 @@
-bld/*
+bld
 *.swp
 iotop
 *.bak
@@ -6,3 +6,5 @@ iotop
 .bin
 .obj
 *.depend
+*.so
+
