@@ -1,0 +1,11 @@
+
+#ifndef LIBIOTOP_CONFIG_INCLUDED
+
+	#define LIBIOTOP_CONFIG_INCLUDED 1
+
+	/* Version info */
+	#undef PACKAGE_NAME
+	#undef PACKAGE_VERSION
+
+#endif /* LIBIOTOP_CONFIG_INCLUDED */
+

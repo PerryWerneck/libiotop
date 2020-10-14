@@ -668,38 +668,38 @@ void view_curses_fini(void) {
 }
 
 void view_curses_loop(void) {
-	struct xxxid_stats_arr *ps=NULL;
-	struct xxxid_stats_arr *cs=NULL;
-	struct act_stats act={0};
+
+	iotop_view view;
+	memset(&view,0,sizeof(view));
+
 	uint64_t bef=0;
-	int refresh=0;
 	int k=ERR;
 
 	for (;;) {
 		uint64_t now=monotime();
 
-		if (bef+1000*hSession->params.delay<now) {
+		if (bef+1000*hSession->param.p.delay<now) {
 			bef=now;
-			if (ps)
-				arr_free(ps);
+			if (view.ps)
+				arr_free(view.ps);
 
-			ps=cs;
-			act.read_bytes_o=act.read_bytes;
-			act.write_bytes_o=act.write_bytes;
-			if (act.ts_c)
-				act.have_o=1;
-			act.ts_o=act.ts_c;
+			view.ps = view.cs;
+			view.act.read_bytes_o=view.act.read_bytes;
+			view.act.write_bytes_o=view.act.write_bytes;
+			if (view.act.ts_c)
+				view.act.have_o=1;
+			view.act.ts_o=view.act.ts_c;
 
-			cs=fetch_data(hSession->config.f.processes,filter1);
-			if (!ps) {
-				ps=cs;
-				cs=fetch_data(hSession->config.f.processes,filter1);
+			view.cs=fetch_data(hSession->config.f.processes,filter1);
+			if (!view.ps) {
+				view.ps=view.cs;
+				view.cs=fetch_data(hSession->config.f.processes,filter1);
 			}
-			get_vm_counters(&act.read_bytes,&act.write_bytes);
-			act.ts_c=now;
-			refresh=1;
+			get_vm_counters(&view.act.read_bytes,&view.act.write_bytes);
+			view.act.ts_c=now;
+			view.refresh=1;
 		}
-		if (refresh&&k==ERR)
+		if (view.refresh&&k==ERR)
 			k=KEY_REFRESH;
 		if (k!=ERR) {
 			int kres;
@@ -707,11 +707,11 @@ void view_curses_loop(void) {
 			if ((kres=curses_key(k))>0)
 				break;
 			if (kres==0) {
-				view_curses(cs,ps,&act,refresh);
-				refresh=0;
+				view_curses(view.cs,view.ps,&view.act,view.refresh);
+				view.refresh=0;
 			}
 		}
-		if ((hSession->params.iter>-1)&&((--hSession->params.iter)==0))
+		if ((hSession->param.p.iter>-1)&&((--hSession->param.p.iter)==0))
 			break;
 		k=getch();
 	}

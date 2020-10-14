@@ -15,7 +15,9 @@ You should have received a copy of the GNU General Public License along with thi
 
 	#define LIBIOTOP_INTERNALS_H_INCLUDED
 
+	#include <config.h>
 	#include <libiotop.h>
+	#include <stdint.h>
 
 	struct _iotop {
 
@@ -46,15 +48,42 @@ You should have received a copy of the GNU General Public License along with thi
 
 		} config;
 
-		struct {
-			int iter;
-			int delay;
-			int pid;
-			int user_id;
-		} params;
+		union {
+			struct {
+				int iter;
+				int delay;
+				int pid;
+				int user_id;
+			} p;
+			int params[IOTOP_PARAM_CUSTOM];
+		} param;
 
 		int maxpidlen;
 
+	};
+
+	struct xxxid_stats_arr {
+		struct xxxid_stats **arr;
+		struct xxxid_stats **sor;
+		int length;
+		int size;
+	};
+
+	struct act_stats {
+		uint64_t read_bytes;
+		uint64_t write_bytes;
+		uint64_t read_bytes_o;
+		uint64_t write_bytes_o;
+		uint64_t ts_c;
+		uint64_t ts_o;
+		uint8_t have_o;
+	};
+
+	struct _iotop_view {
+		int refresh;
+		struct xxxid_stats_arr *ps;
+		struct xxxid_stats_arr *cs;
+		struct act_stats act;
 	};
 
 	/// @brief Global Handle (temporary)

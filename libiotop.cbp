@@ -52,6 +52,9 @@
 		<Unit filename="src/libiotop/checks.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="src/libiotop/getset.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/libiotop/ioprio.c">
 			<Option compilerVar="CC" />
 		</Unit>

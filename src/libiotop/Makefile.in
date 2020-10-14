@@ -16,7 +16,9 @@
 # You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-TARGET=libiotop.so
+PACKAGE_NAME:=@PACKAGE_NAME@
+TARGET:=$(PACKAGE_NAME).so
+VER:=@PACKAGE_VERSION@
 
 SRCS:=$(wildcard *.c)
 OBJS:=$(patsubst %c,%o,$(patsubst %,bld/%,$(SRCS)))
@@ -49,7 +51,12 @@ MYLIBS=$(LIBS) $(NCLD)
 MYLDFLAGS=$(LDFLAGS)
 STRIP?=strip
 
-PREFIX?=$(DESTDIR)/usr
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bindir=@bindir@
+sbindir=@sbindir@
+libdir=@libdir@
+includedir=@includedir@
 
 ifeq ("$(V)","1")
 Q:=
@@ -61,7 +68,11 @@ endif
 
 all: $(TARGET)
 
-$(TARGET): $(OBJS)
+$(PACKAGE_NAME).so: $(PACKAGE_NAME).so.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@
+	$(E) LN $@
+	$(Q)ln -sf $^ $@
+
+$(PACKAGE_NAME).so.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@: $(OBJS)
 	$(E) LD $@
 	$(Q)$(CC) -shared -Wl,-soname,$(@F) -fPIC -o $@ $(MYLDFLAGS) $^ $(MYLIBS)
 
@@ -76,21 +87,21 @@ clean:
 	$(Q)rm -rf ./bld $(TARGET)
 
 install: $(TARGET)
-	$(E) STRIP $(TARGET)
-	$(Q)$(STRIP) $(TARGET)
 	$(E) INSTALL $(TARGET)
-	$(Q)install -TD -m 0755 $(TARGET) $(PREFIX)/sbin/$(TARGET)
-	$(Q)install -TD -m 0644 iotop.8 $(PREFIX)/share/man/man8/iotop.8
+	$(Q)install -TD -m 0755 $(TARGET) $(DESTDIR)/$(libdir)/$(PACKAGE_NAME).so.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@
+	$(Q)ln -sf $(PACKAGE_NAME).so.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@ $(DESTDIR)$(libdir)/$(PACKAGE_NAME).so
+	$(Q)install -TD -m 0644 @BASEDIR@/src/include/libiotop.h $(DESTDIR)$(includedir)/libiotop.h
 
 uninstall:
 	$(E) UNINSTALL $(TARGET)
-	$(Q)rm $(PREFIX)/sbin/$(TARGET)
+	$(Q)rm $(DESTDIR)/$(libdir)/$(PACKAGE_NAME).so
+	$(Q)rm $(DESTDIR)/$(libdir)/$(PACKAGE_NAME).so.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@
+	$(Q)rm $(DESTDIR)$(includedir)/libiotop.h
 
 bld/.mkdir:
 	$(Q)mkdir -p bld
 	$(Q)touch bld/.mkdir
 
-VER:=$(shell grep VERSION ../include/iotop.h|tr -d '\"'|awk '{print $$3}')
 mkotar:
 	$(MAKE) clean
 	-dh_clean

@@ -135,7 +135,7 @@ static void parse_args(int argc,char *argv[]) {
 
 		switch (c) {
 			case 'v':
-				printf("%s %s\n",argv[0],VERSION);
+				printf("%s %s\n",argv[0],PACKAGE_VERSION);
 				exit(EXIT_SUCCESS);
 			case 'h':
 				print_help();
@@ -153,17 +153,17 @@ static void parse_args(int argc,char *argv[]) {
 				iotop_set_flag(hSession,(IOTOP_FLAG) (strchr(str_opt,c)-str_opt),1);
 				break;
 			case 'n':
-				hSession->params.iter=atoi(optarg);
+				iotop_set_param(hSession,IOTOP_PARAM_ITER,atoi(optarg));
 				break;
 			case 'd':
-				hSession->params.delay=atoi(optarg);
+				iotop_set_param(hSession,IOTOP_PARAM_DELAY,atoi(optarg));
 				break;
 			case 'p':
-				hSession->params.pid=atoi(optarg);
+				iotop_set_param(hSession,IOTOP_PARAM_PID,atoi(optarg));
 				break;
 			case 'u':
 				if (isdigit(optarg[0]))
-					hSession->params.user_id=atoi(optarg);
+					iotop_set_param(hSession,IOTOP_PARAM_USER_ID,atoi(optarg));
 				else {
 					struct passwd *pwd=getpwnam(optarg);
 
@@ -171,7 +171,7 @@ static void parse_args(int argc,char *argv[]) {
 						fprintf(stderr,"%s: user %s not found\n",progname,optarg);
 						exit(EXIT_FAILURE);
 					}
-					hSession->params.user_id=pwd->pw_uid;
+					iotop_set_param(hSession,IOTOP_PARAM_USER_ID,pwd->pw_uid);
 				}
 				break;
 			default:

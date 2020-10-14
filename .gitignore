@@ -6,5 +6,13 @@ iotop
 .bin
 .obj
 *.depend
+*.so.*
 *.so
+aclocal.m4
+autom4te.cache
+config.*
+configure
+scripts
+stamp-h1
+Makefile
 

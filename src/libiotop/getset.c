@@ -12,46 +12,28 @@ You should have received a copy of the GNU General Public License along with thi
 */
 
 /**
- * @brief Create/destroy iotop handle.
+ * @brief Get/Set iotop properties.
  *
  */
 
  #include <libiotop-internals.h>
- #include <malloc.h>
- #include <string.h> // memset
 
- // TODO: Remove it after migration.
- iotop * hSession = NULL;
-
- iotop * iotop_new() {
-
-	// Allocate handle
-	iotop * handle = malloc(sizeof(iotop));
-	memset(handle,00,sizeof(iotop));
-
-	// Set defaults.
-	handle->config.f.sort_by	=	IOTOP_SORT_BY_GRAPH;
-	handle->config.f.sort_order	=	IOTOP_SORT_DESC;
-	handle->config.f.hidegraph	= 	1;
-
-	// Init params.
-	handle->param.p.iter=-1;
-	handle->param.p.delay=1;
-	handle->param.p.pid=-1;
-	handle->param.p.user_id=-1;
-
-	handle->maxpidlen = 5;
-
-	// Store on global
-	hSession = handle;
-
-	// And return it.
-	return handle;
-
+ void iotop_set_flag(iotop *handle, IOTOP_FLAG flag, int value) {
+	handle->config.opts[flag] = value;
  }
 
- void iotop_free(iotop *handle) {
-
-	free(handle);
+ int iotop_get_flag(iotop *handle, IOTOP_FLAG flag) {
+ 	return handle->config.opts[flag];
  }
 
+ const char * iotop_get_version() {
+	return PACKAGE_VERSION;
+ }
+
+ void iotop_set_param(iotop *handle, IOTOP_PARAM param, int value) {
+	handle->param.params[param] = value;
+ }
+
+ int iotop_get_param(iotop *handle, IOTOP_PARAM param) {
+ 	return handle->param.params[param];
+ }

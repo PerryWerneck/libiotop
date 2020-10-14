@@ -104,9 +104,9 @@ void view_batch_loop(void) {
 		act.ts_o=act.ts_c;
 		act.have_o=1;
 
-		if ((hSession->params.iter>-1)&&((--hSession->params.iter)==0))
+		if ((hSession->param.p.iter>-1)&&((--hSession->param.p.iter)==0))
 			break;
-		sleep(hSession->params.delay);
+		sleep(hSession->param.p.delay);
 	}
 	arr_free(cs);
 }

@@ -66,7 +66,22 @@ You should have received a copy of the GNU General Public License along with thi
 		IOTOP_SORT_ASC
 	} IOTOP_SORT_ORDER;
 
+	typedef enum {
+		IOTOP_PARAM_ITER,
+		IOTOP_PARAM_DELAY,
+		IOTOP_PARAM_PID,
+		IOTOP_PARAM_USER_ID,
+
+		IOTOP_PARAM_CUSTOM
+	} IOTOP_PARAM;
+
 	typedef struct _iotop iotop;
+	typedef struct _iotop_view iotop_view;
+	typedef void  (* iotop_callback)(const iotop_view *view);
+
+
+	/// @brief Get library version.
+	const char * iotop_get_version();
 
 	/// @brief Initialize a new iotop session.
 	iotop 	* iotop_new();
@@ -79,5 +94,14 @@ You should have received a copy of the GNU General Public License along with thi
 
 	/// @brief Get flag.
 	int 	  iotop_get_flag(iotop *handle, IOTOP_FLAG flag);
+
+	/// @brief Set param.
+	void	  iotop_set_param(iotop *handle, IOTOP_PARAM param, int value);
+
+	/// @brief Get param.
+	int 	  iotop_get_param(iotop *handle, IOTOP_PARAM param);
+
+
+
 
 #endif // LIBIOTOP_H_INCLUDED

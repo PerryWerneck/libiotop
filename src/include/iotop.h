@@ -29,7 +29,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 #include <libiotop-internals.h> // TODO: Remove it after migration
 
-#define VERSION "1.15"
+//#define VERSION "1.15"
 
 /*
 typedef union {
@@ -102,6 +102,7 @@ struct xxxid_stats {
 
 #define PROC_LIST_SZ_INC 1024
 
+/*
 struct xxxid_stats_arr {
 	struct xxxid_stats **arr;
 	struct xxxid_stats **sor;
@@ -118,6 +119,7 @@ struct act_stats {
 	uint64_t ts_o;
 	uint8_t have_o;
 };
+*/
 
 void nl_init(void);
 void nl_fini(void);

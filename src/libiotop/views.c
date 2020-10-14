@@ -204,10 +204,10 @@ int iotop_sort_cb(const void *a,const void *b) {
 }
 
 int filter1(struct xxxid_stats *s) {
-	if ((hSession->params.user_id!=-1)&&(s->euid!=hSession->params.user_id))
+	if ((hSession->param.p.user_id!=-1)&&(s->euid!=hSession->param.p.user_id))
 		return 1;
 
-	if ((hSession->params.pid!=-1)&&(s->tid!=hSession->params.pid))
+	if ((hSession->param.p.pid!=-1)&&(s->tid!=hSession->param.p.pid))
 		return 1;
 
 	return 0;
