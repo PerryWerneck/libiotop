@@ -11,7 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 */
 
-#include "iotop.h"
+#include <iotop.h>
 
 #include <time.h>
 #include <fcntl.h>
@@ -24,7 +24,7 @@ You should have received a copy of the GNU General Public License along with thi
 #include <sys/stat.h>
 #include <sys/types.h>
 
-inline char *read_cmdline(int pid,int isshort) {
+char *read_cmdline(int pid,int isshort) {
 	char *rv=NULL;
 	char path[30];
 	int fd;
@@ -118,7 +118,7 @@ inline char *read_cmdline(int pid,int isshort) {
 	return rv;
 }
 
-static inline int __next_pid(DIR *dir) {
+static int __next_pid(DIR *dir) {
 	while (1) {
 		struct dirent *de=readdir(dir);
 
@@ -137,7 +137,7 @@ static inline int __next_pid(DIR *dir) {
 	return 0;
 }
 
-inline struct pidgen *openpidgen(int flags) {
+struct pidgen *openpidgen(int flags) {
 	struct pidgen *pg=malloc(sizeof(struct pidgen));
 
 	if (!pg)
@@ -153,7 +153,7 @@ inline struct pidgen *openpidgen(int flags) {
 	return NULL;
 }
 
-inline void closepidgen(struct pidgen *pg) {
+void closepidgen(struct pidgen *pg) {
 	if (pg->__proc)
 		closedir((DIR *)pg->__proc);
 
@@ -163,7 +163,7 @@ inline void closepidgen(struct pidgen *pg) {
 	free(pg);
 }
 
-inline int pidgen_next(struct pidgen *pg) {
+int pidgen_next(struct pidgen *pg) {
 	int pid;
 
 	if (pg->__task) {
@@ -191,7 +191,7 @@ inline int pidgen_next(struct pidgen *pg) {
 	return pid;
 }
 
-inline int64_t monotime(void) {
+int64_t monotime(void) {
 	struct timespec ts;
 	int64_t res;
 
@@ -203,7 +203,7 @@ inline int64_t monotime(void) {
 
 #define UBLEN 1024
 
-inline char *u8strpadt(const char *s,size_t len) {
+char *u8strpadt(const char *s,size_t len) {
 	char *d=malloc(UBLEN);
 	size_t dl=UBLEN;
 	size_t si=0;

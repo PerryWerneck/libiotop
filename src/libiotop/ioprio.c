@@ -11,7 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 */
 
-#include "iotop.h"
+#include <iotop.h>
 
 #include <sched.h>
 #include <stdio.h>
@@ -25,7 +25,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 const char *str_ioprio_class[]={"-","rt","be","id"};
 
-inline int get_ioprio_from_sched(pid_t pid) {
+int get_ioprio_from_sched(pid_t pid) {
 	int scheduler=sched_getscheduler(pid);
 	int nice=getpriority(PRIO_PROCESS,pid);
 	int ioprio_nice=(nice+20)/5;
@@ -37,7 +37,7 @@ inline int get_ioprio_from_sched(pid_t pid) {
 	return (IOPRIO_CLASS_BE<<IOPRIO_CLASS_SHIFT)+ioprio_nice;
 }
 
-inline int get_ioprio(pid_t pid) {
+int get_ioprio(pid_t pid) {
 	int io_prio,io_class;
 
 	io_prio=syscall(SYS_ioprio_get,IOPRIO_WHO_PROCESS,pid);
@@ -47,15 +47,15 @@ inline int get_ioprio(pid_t pid) {
 	return io_prio;
 }
 
-inline int ioprio2class(int ioprio) {
+int ioprio2class(int ioprio) {
 	return ioprio>>IOPRIO_CLASS_SHIFT;
 }
 
-inline int ioprio2prio(int ioprio) {
+int ioprio2prio(int ioprio) {
 	return ioprio&((1<<IOPRIO_CLASS_SHIFT)-1);
 }
 
-inline const char *str_ioprio(int io_prio) {
+const char *str_ioprio(int io_prio) {
 	static const char corrupted[]="xx/x";
 	static char buf[IOPRIO_STR_MAXSIZ];
 	int io_class=io_prio>>IOPRIO_CLASS_SHIFT;
@@ -70,11 +70,11 @@ inline const char *str_ioprio(int io_prio) {
 	return (const char *)buf;
 }
 
-inline int ioprio_value(int class,int prio) {
+int ioprio_value(int class,int prio) {
 	return (class<<IOPRIO_CLASS_SHIFT)|prio;
 }
 
-inline int set_ioprio(int which,int who,int ioprio_class,int ioprio_prio) {
+int set_ioprio(int which,int who,int ioprio_class,int ioprio_prio) {
 	return syscall(SYS_ioprio_set,which,who,ioprio_value(ioprio_class,ioprio_prio));
 }
 

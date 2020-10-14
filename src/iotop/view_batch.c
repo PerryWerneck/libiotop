@@ -11,7 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 */
 
-#include "iotop.h"
+#include <iotop.h>
 
 #include <time.h>
 #include <stdio.h>
@@ -20,7 +20,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 #define TIMEDIFF_IN_S(sta,end) ((((sta)==(end))||(sta)==0)?0.0001:(((end)-(sta))/1000.0))
 
-static inline void view_batch(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,struct act_stats *act) {
+static void view_batch(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,struct act_stats *act) {
 	double time_s=TIMEDIFF_IN_S(act->ts_o,act->ts_c);
 	int diff_len=create_diff(cs,ps,time_s);
 	double total_a_read,total_a_write;
@@ -76,13 +76,13 @@ static inline void view_batch(struct xxxid_stats_arr *cs,struct xxxid_stats_arr 
 	}
 }
 
-inline void view_batch_init(void) {
+void view_batch_init(void) {
 }
 
-inline void view_batch_fini(void) {
+void view_batch_fini(void) {
 }
 
-inline void view_batch_loop(void) {
+void view_batch_loop(void) {
 	struct xxxid_stats_arr *ps=NULL;
 	struct xxxid_stats_arr *cs=NULL;
 	struct act_stats act={0};

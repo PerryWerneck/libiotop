@@ -11,12 +11,12 @@ You should have received a copy of the GNU General Public License along with thi
 
 */
 
-#include "iotop.h"
+#include <iotop.h>
 
 #include <stdio.h>
 #include <string.h>
 
-inline void calc_total(struct xxxid_stats_arr *cs,double *read,double *write) {
+void calc_total(struct xxxid_stats_arr *cs,double *read,double *write) {
 	int i;
 
 	*read=*write=0;
@@ -35,7 +35,7 @@ inline void calc_total(struct xxxid_stats_arr *cs,double *read,double *write) {
 #define RRV(to,from) (((to)<(from))?(~0ULL)-(to)+(from):(to)-(from))
 #define RRVf(pto,pfrom,fld) RRV(pto->fld,pfrom->fld)
 
-inline void calc_a_total(struct act_stats *act,double *read,double *write,double time_s) {
+void calc_a_total(struct act_stats *act,double *read,double *write,double time_s) {
 	*read=*write=0;
 
 	if (act->have_o) {
@@ -49,7 +49,7 @@ inline void calc_a_total(struct act_stats *act,double *read,double *write,double
 	}
 }
 
-inline int value2scale(double val,double mx) {
+int value2scale(double val,double mx) {
 	val=100.0*val/mx;
 
 	if (val>75)
@@ -63,7 +63,7 @@ inline int value2scale(double val,double mx) {
 	return 0;
 }
 
-inline int create_diff(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,double time_s) {
+int create_diff(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,double time_s) {
 	int diff_size=cs->length;
 	int n=0;
 
@@ -117,7 +117,7 @@ inline int create_diff(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,dou
 	return diff_size;
 }
 
-inline void humanize_val(double *value,char *str,int allow_accum) {
+void humanize_val(double *value,char *str,int allow_accum) {
 	const char *u="BKMGTPEZY";
 	size_t p=0;
 
@@ -137,7 +137,7 @@ inline void humanize_val(double *value,char *str,int allow_accum) {
 	snprintf(str,4,"%c%s",u[p],config.f.accumulated&&allow_accum?"  ":"/s");
 }
 
-inline int iotop_sort_cb(const void *a,const void *b) {
+int iotop_sort_cb(const void *a,const void *b) {
 	int order=config.f.sort_order?1:-1; // SORT_ASC is bit 0=1, else should reverse sort
 	struct xxxid_stats **ppa=(struct xxxid_stats **)a;
 	struct xxxid_stats **ppb=(struct xxxid_stats **)b;
@@ -203,7 +203,7 @@ inline int iotop_sort_cb(const void *a,const void *b) {
 	return res;
 }
 
-inline int filter1(struct xxxid_stats *s) {
+int filter1(struct xxxid_stats *s) {
 	if ((params.user_id!=-1)&&(s->euid!=params.user_id))
 		return 1;
 

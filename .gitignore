@@ -1,3 +1,8 @@
 bld/*
 *.swp
 iotop
+*.bak
+*.layout
+.bin
+.obj
+*.depend

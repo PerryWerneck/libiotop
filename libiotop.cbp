@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="libiotop" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output=".bin/Debug/libiotop" prefix_auto="1" extension_auto="1" />
+				<Option object_output=".obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output=".bin/Release/libiotop" prefix_auto="1" extension_auto="1" />
+				<Option object_output=".obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="`pkg-config --cflags ncurses`" />
+			<Add directory="src/include" />
+		</Compiler>
+		<Linker>
+			<Add option="`pkg-config --libs ncurses`" />
+		</Linker>
+		<Unit filename="src/include/iotop.h" />
+		<Unit filename="src/iotop/main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/iotop/view_batch.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/iotop/view_curses.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/libiotop/arr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/libiotop/checks.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/libiotop/ioprio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/libiotop/utils.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/libiotop/views.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/libiotop/vmstat.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/libiotop/xxxid_info.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>

@@ -11,7 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 */
 
-#include "iotop.h"
+#include <iotop.h>
 
 #include <pwd.h>
 #include <ctype.h>
@@ -33,7 +33,7 @@ view_init v_init_cb=view_curses_init;
 view_fini v_fini_cb=view_curses_fini;
 view_loop v_loop_cb=view_curses_loop;
 
-inline void init_params(void) {
+void init_params(void) {
 	params.iter=-1;
 	params.delay=1;
 	params.pid=-1;
@@ -42,7 +42,7 @@ inline void init_params(void) {
 
 static const char str_opt[]="boPaktqHc123456789";
 
-static inline void print_help(void) {
+static void print_help(void) {
 	printf(
 		"Usage: %s [OPTIONS]\n\n"
 		"DISK READ and DISK WRITE are the block I/O bandwidth used during the sampling\n"
@@ -82,7 +82,7 @@ static inline void print_help(void) {
 	);
 }
 
-static inline void parse_args(int argc,char *argv[]) {
+static void parse_args(int argc,char *argv[]) {
 	init_params();
 	memset(&config,0,sizeof(config));
 	config.f.sort_by=SORT_BY_GRAPH;
@@ -177,7 +177,7 @@ static inline void parse_args(int argc,char *argv[]) {
 	}
 }
 
-inline void sig_handler(int signo) {
+void sig_handler(int signo) {
 	if (signo==SIGINT) {
 		v_fini_cb();
 		nl_fini();

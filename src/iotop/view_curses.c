@@ -11,7 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 */
 
-#include "iotop.h"
+#include <iotop.h>
 
 // allow ncurses printf-like arguments checking
 #define GCC_PRINTF
@@ -89,7 +89,7 @@ static const int column_width[]={
 
 #define TIMEDIFF_IN_S(sta,end) ((((sta)==(end))||(sta)==0)?0.0001:(((end)-(sta))/1000.0))
 
-static inline void view_curses(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,struct act_stats *act,int roll) {
+static void view_curses(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,struct act_stats *act,int roll) {
 	double time_s=TIMEDIFF_IN_S(act->ts_o,act->ts_c);
 	static const uint8_t iohist_z[HISTORY_CNT]={0};
 	int diff_len=create_diff(cs,ps,time_s);
@@ -483,7 +483,7 @@ static inline void view_curses(struct xxxid_stats_arr *cs,struct xxxid_stats_arr
 	refresh();
 }
 
-static inline int curses_key(int ch) {
+static int curses_key(int ch) {
 	switch (ch) {
 		case 'q':
 		case 'Q':
@@ -636,7 +636,7 @@ static inline int curses_key(int ch) {
 	return 0;
 }
 
-inline void view_curses_init(void) {
+void view_curses_init(void) {
 	if (strcmp(getenv("TERM"),"linux")) {
 		if (setlocale(LC_CTYPE,"C.UTF-8"))
 			has_unicode=1;
@@ -655,11 +655,11 @@ inline void view_curses_init(void) {
 	nodelay(stdscr,TRUE);
 }
 
-inline void view_curses_fini(void) {
+void view_curses_fini(void) {
 	endwin();
 }
 
-inline void view_curses_loop(void) {
+void view_curses_loop(void) {
 	struct xxxid_stats_arr *ps=NULL;
 	struct xxxid_stats_arr *cs=NULL;
 	struct act_stats act={0};

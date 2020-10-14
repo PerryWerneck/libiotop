@@ -11,7 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 */
 
-#include "iotop.h"
+#include <iotop.h>
 
 #include <pwd.h>
 #include <errno.h>
@@ -46,7 +46,7 @@ struct msgtemplate {
 static int nl_sock=-1;
 static int nl_fam_id=0;
 
-inline int send_cmd(int sock_fd,__u16 nlmsg_type,__u32 nlmsg_pid,__u8 genl_cmd,__u16 nla_type,void *nla_data,int nla_len) {
+int send_cmd(int sock_fd,__u16 nlmsg_type,__u32 nlmsg_pid,__u8 genl_cmd,__u16 nla_type,void *nla_data,int nla_len) {
 	struct nlattr *na;
 	struct sockaddr_nl nladdr;
 	int r,buflen;
@@ -86,7 +86,7 @@ inline int send_cmd(int sock_fd,__u16 nlmsg_type,__u32 nlmsg_pid,__u8 genl_cmd,_
 	return 0;
 }
 
-inline int get_family_id(int sock_fd) {
+int get_family_id(int sock_fd) {
 	static char name[256];
 
 	struct {
@@ -115,7 +115,7 @@ inline int get_family_id(int sock_fd) {
 	return id;
 }
 
-inline void nl_init(void) {
+void nl_init(void) {
 	struct sockaddr_nl addr;
 	int sock_fd=socket(PF_NETLINK,SOCK_RAW,NETLINK_GENERIC);
 
@@ -141,7 +141,7 @@ error:
 	exit(EXIT_FAILURE);
 }
 
-inline int nl_xxxid_info(pid_t xxxid,struct xxxid_stats *stats) {
+int nl_xxxid_info(pid_t xxxid,struct xxxid_stats *stats) {
 	if (nl_sock<0) {
 		perror("nl_xxxid_info");
 		exit(EXIT_FAILURE);
@@ -201,12 +201,12 @@ inline int nl_xxxid_info(pid_t xxxid,struct xxxid_stats *stats) {
 	return 0;
 }
 
-inline void nl_fini(void) {
+void nl_fini(void) {
 	if (nl_sock>-1)
 		close(nl_sock);
 }
 
-inline void free_stats(struct xxxid_stats *s) {
+void free_stats(struct xxxid_stats *s) {
 	if (s->cmdline1)
 		free(s->cmdline1);
 	if (s->cmdline2)
@@ -217,7 +217,7 @@ inline void free_stats(struct xxxid_stats *s) {
 	free(s);
 }
 
-inline struct xxxid_stats *make_stats(int pid) {
+struct xxxid_stats *make_stats(int pid) {
 	struct xxxid_stats *s=calloc(1,sizeof *s);
 	struct passwd *pwd;
 
@@ -243,7 +243,7 @@ error:
 	return NULL;
 }
 
-inline struct xxxid_stats_arr *fetch_data(int processes,filter_callback filter) {
+struct xxxid_stats_arr *fetch_data(int processes,filter_callback filter) {
 	struct xxxid_stats_arr *a=arr_alloc();
 
 	if (!a)

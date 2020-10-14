@@ -11,7 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 */
 
-#include "iotop.h"
+#include <iotop.h>
 
 #include <errno.h>
 #include <fcntl.h>
@@ -25,7 +25,7 @@ You should have received a copy of the GNU General Public License along with thi
 #define PGIN "\npgpgin "
 #define PGOU "\npgpgout "
 
-inline int get_vm_counters(uint64_t *pgpgin,uint64_t *pgpgou) {
+int get_vm_counters(uint64_t *pgpgin,uint64_t *pgpgou) {
 	ssize_t bs=BSIZ,bp=0;
 	char *buf,*pi,*po,*t;
 	int fd;

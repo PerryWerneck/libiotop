@@ -11,7 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 */
 
-#include "iotop.h"
+#include <iotop.h>
 
 #include <errno.h>
 #include <stdio.h>
@@ -22,7 +22,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 #include <linux/capability.h>
 
-inline int system_checks(void) {
+int system_checks(void) {
 	int vm_event_counters=0;
 	int root_or_netadm=0;
 	int io_accounting=0;

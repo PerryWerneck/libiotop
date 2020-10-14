@@ -113,29 +113,29 @@ struct act_stats {
 	uint8_t have_o;
 };
 
-inline void nl_init(void);
-inline void nl_fini(void);
+void nl_init(void);
+void nl_fini(void);
 
-inline int nl_xxxid_info(pid_t xxxid,struct xxxid_stats *stats);
+int nl_xxxid_info(pid_t xxxid,struct xxxid_stats *stats);
 
 typedef int (*filter_callback)(struct xxxid_stats *);
 
-inline struct xxxid_stats_arr *fetch_data(int processes,filter_callback);
-inline void free_stats(struct xxxid_stats *s);
+struct xxxid_stats_arr *fetch_data(int processes,filter_callback);
+void free_stats(struct xxxid_stats *s);
 
 typedef void (*view_loop)(void);
 typedef void (*view_init)(void);
 typedef void (*view_fini)(void);
 
-inline void view_batch_loop(void);
-inline void view_batch_init(void);
-inline void view_batch_fini(void);
+void view_batch_loop(void);
+void view_batch_init(void);
+void view_batch_fini(void);
 
-inline void view_curses_loop(void);
-inline void view_curses_init(void);
-inline void view_curses_fini(void);
+void view_curses_loop(void);
+void view_curses_init(void);
+void view_curses_fini(void);
 
-inline unsigned int curses_sleep(unsigned int seconds);
+unsigned int curses_sleep(unsigned int seconds);
 
 /* utils.c */
 
@@ -150,13 +150,13 @@ struct pidgen {
 	int __flags;
 };
 
-inline char *read_cmdline(int pid,int isshort);
+char *read_cmdline(int pid,int isshort);
 
-inline struct pidgen *openpidgen(int flags);
-inline void closepidgen(struct pidgen *pg);
-inline int pidgen_next(struct pidgen *pg);
-inline int64_t monotime(void);
-inline char *u8strpadt(const char *s,size_t len);
+struct pidgen *openpidgen(int flags);
+void closepidgen(struct pidgen *pg);
+int pidgen_next(struct pidgen *pg);
+int64_t monotime(void);
+char *u8strpadt(const char *s,size_t len);
 
 /* ioprio.c */
 
@@ -195,39 +195,39 @@ enum {
 
 extern const char *str_ioprio_class[];
 
-inline int get_ioprio(pid_t pid);
-inline const char *str_ioprio(int io_prio);
-inline int ioprio_value(int class,int prio);
-inline int set_ioprio(int which,int who,int ioprio_class,int ioprio_prio);
-inline int ioprio2class(int ioprio);
-inline int ioprio2prio(int ioprio);
+int get_ioprio(pid_t pid);
+const char *str_ioprio(int io_prio);
+int ioprio_value(int class,int prio);
+int set_ioprio(int which,int who,int ioprio_class,int ioprio_prio);
+int ioprio2class(int ioprio);
+int ioprio2prio(int ioprio);
 
 /* vmstat.c */
 
-inline int get_vm_counters(uint64_t *pgpgin,uint64_t *pgpgou);
+int get_vm_counters(uint64_t *pgpgin,uint64_t *pgpgou);
 
 /* checks.c */
 
-inline int system_checks(void);
+int system_checks(void);
 
 /* arr.c */
 
-inline struct xxxid_stats_arr *arr_alloc(void);
-inline int arr_add(struct xxxid_stats_arr *a,struct xxxid_stats *s);
-inline struct xxxid_stats *arr_find(struct xxxid_stats_arr *pa,pid_t tid);
-inline void arr_free(struct xxxid_stats_arr *pa);
-inline void arr_sort(struct xxxid_stats_arr *pa,int (*cb)(const void *a,const void *b));
+struct xxxid_stats_arr *arr_alloc(void);
+int arr_add(struct xxxid_stats_arr *a,struct xxxid_stats *s);
+struct xxxid_stats *arr_find(struct xxxid_stats_arr *pa,pid_t tid);
+void arr_free(struct xxxid_stats_arr *pa);
+void arr_sort(struct xxxid_stats_arr *pa,int (*cb)(const void *a,const void *b));
 
 #define HEADER1_FORMAT "  Total DISK READ: %7.2f %s%s |   Total DISK WRITE: %7.2f %s%s"
 #define HEADER2_FORMAT "Current DISK READ: %7.2f %s%s | Current DISK WRITE: %7.2f %s%s"
 
-inline void calc_total(struct xxxid_stats_arr *cs,double *read,double *write);
-inline void calc_a_total(struct act_stats *act,double *read,double *write,double time_s);
-inline void humanize_val(double *value,char *str,int allow_accum);
-inline int iotop_sort_cb(const void *a,const void *b);
-inline int create_diff(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,double time_s);
-inline int value2scale(double val,double mx);
-inline int filter1(struct xxxid_stats *s);
+void calc_total(struct xxxid_stats_arr *cs,double *read,double *write);
+void calc_a_total(struct act_stats *act,double *read,double *write,double time_s);
+void humanize_val(double *value,char *str,int allow_accum);
+int iotop_sort_cb(const void *a,const void *b);
+int create_diff(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,double time_s);
+int value2scale(double val,double mx);
+int filter1(struct xxxid_stats *s);
 
 #ifndef KEY_CTRL_L
 #define KEY_CTRL_L 014

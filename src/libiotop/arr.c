@@ -11,14 +11,14 @@ You should have received a copy of the GNU General Public License along with thi
 
 */
 
-#include "iotop.h"
+#include <iotop.h>
 
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-inline struct xxxid_stats_arr *arr_alloc(void) {
+struct xxxid_stats_arr *arr_alloc(void) {
 	struct xxxid_stats_arr *a;
 
 	a=calloc(1,sizeof *a);
@@ -34,7 +34,7 @@ inline struct xxxid_stats_arr *arr_alloc(void) {
 	return a;
 }
 
-static inline int arr_resize(struct xxxid_stats_arr *a,int newsize) {
+static int arr_resize(struct xxxid_stats_arr *a,int newsize) {
 	struct xxxid_stats **t;
 
 	if (!a)
@@ -53,7 +53,7 @@ static inline int arr_resize(struct xxxid_stats_arr *a,int newsize) {
 	return 0;
 }
 
-inline int arr_add(struct xxxid_stats_arr *pa,struct xxxid_stats *ps) {
+int arr_add(struct xxxid_stats_arr *pa,struct xxxid_stats *ps) {
 	int a=-1;
 	int i,s,e;
 	pid_t r;
@@ -107,7 +107,7 @@ inline int arr_add(struct xxxid_stats_arr *pa,struct xxxid_stats *ps) {
 	return 0; // SUCCESS
 }
 
-inline struct xxxid_stats *arr_find(struct xxxid_stats_arr *pa,pid_t tid) {
+struct xxxid_stats *arr_find(struct xxxid_stats_arr *pa,pid_t tid) {
 	int i,s,e,r;
 
 	if (!pa)
@@ -138,7 +138,7 @@ inline struct xxxid_stats *arr_find(struct xxxid_stats_arr *pa,pid_t tid) {
 	}
 }
 
-inline void arr_free(struct xxxid_stats_arr *pa) {
+void arr_free(struct xxxid_stats_arr *pa) {
 	if (!pa)
 		return;
 	if (pa->arr) {
@@ -153,7 +153,7 @@ inline void arr_free(struct xxxid_stats_arr *pa) {
 	free(pa);
 }
 
-inline void arr_sort(struct xxxid_stats_arr *pa,int (*cb)(const void *a,const void *b)) {
+void arr_sort(struct xxxid_stats_arr *pa,int (*cb)(const void *a,const void *b)) {
 	if (!pa)
 		return;
 	if (pa->sor)
