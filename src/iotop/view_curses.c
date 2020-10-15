@@ -346,8 +346,15 @@ static void view_curses(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,s
 	}
 	attroff(A_REVERSE);
 
-	iotop_sort_cb(NULL,(void *)(long)((has_unicode&&unicode)?gr_width*2:gr_width));
-	arr_sort(cs,iotop_sort_cb);
+//	iotop_sort_cb(NULL,(void *)(long)((has_unicode&&unicode)?gr_width*2:gr_width));
+//	arr_sort(cs,iotop_sort_cb);
+
+	iotop_sort_stats(
+		cs,
+		hSession->config.f.sort_by,
+		hSession->config.f.sort_order,
+		((has_unicode&&unicode)?gr_width*2:gr_width)
+	);
 
 	if (maxy<10)
 		nohelp=1;

@@ -53,7 +53,9 @@ static void view_batch(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,str
 	if (!hSession->config.f.quiet)
 		printf("%6s %4s %8s %11s %11s %6s %6s %s\n",
 				hSession->config.f.processes?"PID":"TID","PRIO","USER","DISK READ","DISK WRITE","SWAPIN","IO","COMMAND");
-	arr_sort(cs,iotop_sort_cb);
+
+	// arr_sort(cs,iotop_sort_cb);
+	iotop_sort_stats(cs, hSession->config.f.sort_by, hSession->config.f.sort_order,0);
 
 	for (i=0;cs->sor&&i<diff_len;i++) {
 		struct xxxid_stats *s=cs->sor[i];

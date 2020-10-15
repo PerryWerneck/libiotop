@@ -68,6 +68,8 @@ You should have received a copy of the GNU General Public License along with thi
 		int size;
 	};
 
+	void IOTOP_API iotop_sort_stats(struct xxxid_stats_arr *cs, IOTOP_SORT_OPTION option, IOTOP_SORT_ORDER order, int grlen);
+
 	struct act_stats {
 		uint64_t read_bytes;
 		uint64_t write_bytes;
@@ -208,6 +210,6 @@ You should have received a copy of the GNU General Public License along with thi
 	struct xxxid_stats_arr *arr_alloc(void);
 	int arr_add(struct xxxid_stats_arr *a,struct xxxid_stats *s);
 	struct xxxid_stats *arr_find(struct xxxid_stats_arr *pa,pid_t tid);
-	void arr_sort(struct xxxid_stats_arr *pa,int (*cb)(const void *a,const void *b));
+	// void arr_sort(struct xxxid_stats_arr *pa,int (*cb)(const void *a,const void *b));
 
 #endif // LIBIOTOP_INTERNALS_H_INCLUDED

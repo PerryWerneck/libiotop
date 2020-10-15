@@ -67,6 +67,9 @@
 		<Unit filename="src/libiotop/refresh.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="src/libiotop/sort.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/libiotop/utils.c">
 			<Option compilerVar="CC" />
 		</Unit>
