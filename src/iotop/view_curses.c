@@ -80,12 +80,12 @@ static const int column_width[]={
 	0,  // COMMAND
 };
 
-#define __COLUMN_NAME(i) ((i)==0?(hSession->config.f.processes?"PID":"TID"):column_name[(i)])
+#define __COLUMN_NAME(i) ((i)==0?(config.f.processes?"PID":"TID"):column_name[(i)])
 #define __SAFE_INDEX(i) ((((i)%IOTOP_SORT_BY_MAX)+IOTOP_SORT_BY_MAX)%IOTOP_SORT_BY_MAX)
 #define COLUMN_NAME(i) __COLUMN_NAME(__SAFE_INDEX(i))
 #define COLUMN_L(i) COLUMN_NAME((i)-1)
 #define COLUMN_R(i) COLUMN_NAME((i)+1)
-#define SORT_CHAR(x) ((hSession->config.f.sort_by==x)?(hSession->config.f.sort_order==IOTOP_SORT_ASC?'<':'>'):' ')
+#define SORT_CHAR(x) ((config.f.sort_by==x)?(config.f.sort_order==IOTOP_SORT_ASC?'<':'>'):' ')
 
 #define TIMEDIFF_IN_S(sta,end) ((((sta)==(end))||(sta)==0)?0.0001:(((end)-(sta))/1000.0))
 
@@ -103,7 +103,7 @@ static void view_curses(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,s
 	char str_a_read[4],str_a_write[4];
 	char *head1row_format="";
 	int promptx=0,prompty=0,show;
-	int nohelp=hSession->config.f.nohelp;
+	int nohelp=config.f.nohelp;
 	double mx_t_r=1000.0;
 	double mx_t_w=1000.0;
 	double mx_a_r=1000.0;
@@ -142,32 +142,32 @@ static void view_curses(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,s
 	humanize_val(&total_a_write,str_a_write,0);
 
 	maxcmdline=maxx;
-	if (!hSession->config.f.hidepid)
-		maxcmdline-=hSession->maxpidlen+2;
-	if (!hSession->config.f.hideprio)
+	if (!config.f.hidepid)
+		maxcmdline-=maxpidlen+2;
+	if (!config.f.hideprio)
 		maxcmdline-=column_width[IOTOP_SORT_BY_PRIO];
-	if (!hSession->config.f.hideuser)
+	if (!config.f.hideuser)
 		maxcmdline-=column_width[IOTOP_SORT_BY_USER];
-	if (!hSession->config.f.hideread)
+	if (!config.f.hideread)
 		maxcmdline-=column_width[IOTOP_SORT_BY_READ];
-	if (!hSession->config.f.hidewrite)
+	if (!config.f.hidewrite)
 		maxcmdline-=column_width[IOTOP_SORT_BY_WRITE];
-	if (!hSession->config.f.hideswapin)
+	if (!config.f.hideswapin)
 		maxcmdline-=column_width[IOTOP_SORT_BY_SWAPIN];
-	if (!hSession->config.f.hideio)
+	if (!config.f.hideio)
 		maxcmdline-=column_width[IOTOP_SORT_BY_IO];
 	gr_width=maxcmdline/4;
 	if (gr_width<5)
 		gr_width=5;
 	if (gr_width>HISTORY_POS)
 		gr_width=HISTORY_POS;
-	if (!hSession->config.f.hidegraph)
+	if (!config.f.hidegraph)
 		maxcmdline-=gr_width+1;
 	if (maxcmdline<0)
 		maxcmdline=0;
 
 	gr_width_h=gr_width;
-	if (maxy<10||maxx<(int)strlen(HEADER1_FORMAT)+2*(7-5+3-2+(!hSession->config.f.hidegraph?gr_width_h+1:0)-2)) {
+	if (maxy<10||maxx<(int)strlen(HEADER1_FORMAT)+2*(7-5+3-2+(!config.f.hidegraph?gr_width_h+1:0)-2)) {
 		int size_off;
 
 		head1row=1;
@@ -176,7 +176,7 @@ static void view_curses(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,s
 		if (gr_width_h<3)
 			gr_width_h=3;
 
-		size_off=7-5+3-2+(!hSession->config.f.hidegraph?gr_width_h+1:0)-2;
+		size_off=7-5+3-2+(!config.f.hidegraph?gr_width_h+1:0)-2;
 
 		if (maxx>=(int)strlen(HEADER_XL_FORMAT)+4*size_off)
 			head1row_format=HEADER_XL_FORMAT;
@@ -201,7 +201,7 @@ static void view_curses(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,s
 							shrink_dm=1;
 							size_off-=5;
 						}
-		if (!hSession->config.f.hidegraph)
+		if (!config.f.hidegraph)
 			while (gr_width_h<gr_width&&maxx>=(int)strlen(head1row_format)+4*(size_off+1)) {
 				size_off++;
 				gr_width_h++;
@@ -247,23 +247,23 @@ static void view_curses(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,s
 			}
 			mvhline(0,0,' ',maxx);
 			mvprintw(0,0,head1row_format,total_read,str_read,
-						!hSession->config.f.hidegraph?pg_t_r:"",total_write,str_write,
-						!hSession->config.f.hidegraph?pg_t_w:"",total_a_read,str_a_read,
-						!hSession->config.f.hidegraph?pg_a_r:"",total_a_write,str_a_write,
-						!hSession->config.f.hidegraph?pg_a_w:"");
+						!config.f.hidegraph?pg_t_r:"",total_write,str_write,
+						!config.f.hidegraph?pg_t_w:"",total_a_read,str_a_read,
+						!config.f.hidegraph?pg_a_r:"",total_a_write,str_a_write,
+						!config.f.hidegraph?pg_a_w:"");
 			show=FALSE;
 		}
 	} else {
 		mvhline(0,0,' ',maxx);
 		mvprintw(0,0,HEADER1_FORMAT,total_read,str_read,
-				!hSession->config.f.hidegraph?pg_t_r:"",total_write,str_write,
-				!hSession->config.f.hidegraph?pg_t_w:"");
+				!config.f.hidegraph?pg_t_r:"",total_write,str_write,
+				!config.f.hidegraph?pg_t_w:"");
 
 		if (!in_ionice) {
 			mvhline(1,0,' ',maxx);
 			mvprintw(1,0,HEADER2_FORMAT,total_a_read,str_a_read,
-						!hSession->config.f.hidegraph?pg_a_r:"",total_a_write,str_a_write,
-						!hSession->config.f.hidegraph?pg_a_w:"");
+						!config.f.hidegraph?pg_a_r:"",total_a_write,str_a_write,
+						!config.f.hidegraph?pg_a_w:"");
 			show=FALSE;
 		}
 	}
@@ -325,23 +325,23 @@ static void view_curses(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,s
 		char t[50];
 
 		if (i==IOTOP_SORT_BY_PID)
-			wi=hSession->maxpidlen+2;
+			wi=maxpidlen+2;
 		if (i==IOTOP_SORT_BY_GRAPH)
 			wi=gr_width+1;
 		if (i==IOTOP_SORT_BY_COMMAND)
 			wi=maxcmdline;
 
-		if (hSession->config.opts[&hSession->config.f.hidepid-hSession->config.opts+i])
+		if (config.opts[&config.f.hidepid-config.opts+i])
 			continue;
 
 		wt=strlen(COLUMN_NAME(i));
 		if (wt>wi-1)
 			wt=wi-1;
-		if (hSession->config.f.sort_by==i)
+		if (config.f.sort_by==i)
 			attron(A_BOLD);
 		snprintf(t,sizeof t,"%-*.*s%c",wt,wt,COLUMN_NAME(i),SORT_CHAR(i));
 		printw("%-*.*s",wi,wi,t);
-		if (hSession->config.f.sort_by==i)
+		if (config.f.sort_by==i)
 			attroff(A_BOLD);
 	}
 	attroff(A_REVERSE);
@@ -351,8 +351,8 @@ static void view_curses(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,s
 
 	iotop_sort_stats(
 		cs,
-		hSession->config.f.sort_by,
-		hSession->config.f.sort_order,
+		config.f.sort_by,
+		config.f.sort_order,
 		((has_unicode&&unicode)?gr_width*2:gr_width)
 	);
 
@@ -362,23 +362,23 @@ static void view_curses(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,s
 	lastline=line;
 	for (i=0;cs->sor&&i<diff_len;i++) {
 		struct xxxid_stats *s=cs->sor[i];
-		double read_val=hSession->config.f.accumulated?s->read_val_acc:s->read_val;
-		double write_val=hSession->config.f.accumulated?s->write_val_acc:s->write_val;
+		double read_val=config.f.accumulated?s->read_val_acc:s->read_val;
+		double write_val=config.f.accumulated?s->write_val_acc:s->write_val;
 		char iohist[HISTORY_POS*5];
 		char read_str[4],write_str[4];
 		char *pw_name,*cmdline;
 
 		// visible history is non-zero
-		if (hSession->config.f.only&&!memcmp(s->iohist,iohist_z,(has_unicode&&unicode)?gr_width*2:gr_width))
+		if (config.f.only&&!memcmp(s->iohist,iohist_z,(has_unicode&&unicode)?gr_width*2:gr_width))
 			continue;
 
 		humanize_val(&read_val,read_str,1);
 		humanize_val(&write_val,write_str,1);
 
 		pw_name=u8strpadt(s->pw_name,9);
-		cmdline=u8strpadt(hSession->config.f.fullcmdline?s->cmdline2:s->cmdline1,maxcmdline);
+		cmdline=u8strpadt(config.f.fullcmdline?s->cmdline2:s->cmdline1,maxcmdline);
 
-		if (!hSession->config.f.hidegraph) {
+		if (!config.f.hidegraph) {
 			*iohist=0;
 			for (j=0;j<gr_width;j++)
 				if (has_unicode&&unicode)
@@ -390,22 +390,22 @@ static void view_curses(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,s
 
 		mvhline(line,0,' ',maxx);
 		move(line,0);
-		if (!hSession->config.f.hidepid)
-			printw("%*i  ",hSession->maxpidlen,s->tid);
-		if (!hSession->config.f.hideprio)
+		if (!config.f.hidepid)
+			printw("%*i  ",maxpidlen,s->tid);
+		if (!config.f.hideprio)
 			printw("%4s ",str_ioprio(s->io_prio));
-		if (!hSession->config.f.hideuser)
+		if (!config.f.hideuser)
 			printw("%s ",pw_name?pw_name:"(null)");
-		if (!hSession->config.f.hideread)
+		if (!config.f.hideread)
 			printw("%7.2f %-3.3s ",read_val,read_str);
-		if (!hSession->config.f.hidewrite)
+		if (!config.f.hidewrite)
 			printw("%7.2f %-3.3s ",write_val,write_str);
-		if (!hSession->config.f.hideswapin)
+		if (!config.f.hideswapin)
 			printw("%6.2f %% ",s->swapin_val);
-		if (!hSession->config.f.hideio)
+		if (!config.f.hideio)
 			printw("%6.2f %% ",s->blkio_val);
-		printw("%s",!hSession->config.f.hidegraph?iohist:"");
-		if (!hSession->config.f.hidecmd)
+		printw("%s",!config.f.hidegraph?iohist:"");
+		if (!config.f.hidecmd)
 			printw("%s",cmdline);
 
 		if (pw_name)
@@ -438,19 +438,19 @@ static void view_curses(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,s
 		attron(A_UNDERLINE);
 		printw("o");
 		attroff(A_UNDERLINE);
-		printw(": %s ",hSession->config.f.only?"all":"active");
+		printw(": %s ",config.f.only?"all":"active");
 		attron(A_UNDERLINE);
 		printw("p");
 		attroff(A_UNDERLINE);
-		printw(": %s ",hSession->config.f.processes?"threads":"procs");
+		printw(": %s ",config.f.processes?"threads":"procs");
 		attron(A_UNDERLINE);
 		printw("a");
 		attroff(A_UNDERLINE);
-		printw(": %s ",hSession->config.f.accumulated?"bandwidth":"accum");
+		printw(": %s ",config.f.accumulated?"bandwidth":"accum");
 		attron(A_UNDERLINE);
 		printw("s");
 		attroff(A_UNDERLINE);
-		printw(": %s ",!hSession->config.f.hidegraph?"no-graph":"graph");
+		printw(": %s ",!config.f.hidegraph?"no-graph":"graph");
 		if (has_unicode) {
 			attron(A_UNDERLINE);
 			printw("u");
@@ -466,15 +466,15 @@ static void view_curses(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,s
 		attron(A_UNDERLINE);
 		printw("r");
 		attroff(A_UNDERLINE);
-		printw(": %s ",hSession->config.f.sort_order==IOTOP_SORT_ASC?"desc":"asc");
+		printw(": %s ",config.f.sort_order==IOTOP_SORT_ASC?"desc":"asc");
 		attron(A_UNDERLINE);
 		printw("left");
 		attroff(A_UNDERLINE);
-		printw(": %s ",COLUMN_L(hSession->config.f.sort_by));
+		printw(": %s ",COLUMN_L(config.f.sort_by));
 		attron(A_UNDERLINE);
 		printw("right");
 		attroff(A_UNDERLINE);
-		printw(": %s ",COLUMN_R(hSession->config.f.sort_by));
+		printw(": %s ",COLUMN_R(config.f.sort_by));
 		attron(A_UNDERLINE);
 		printw("home");
 		attroff(A_UNDERLINE);
@@ -510,33 +510,33 @@ static int curses_key(int ch) {
 		case ' ':
 		case 'r':
 		case 'R':
-			hSession->config.f.sort_order=(hSession->config.f.sort_order==IOTOP_SORT_ASC)?IOTOP_SORT_DESC:IOTOP_SORT_ASC;
+			config.f.sort_order=(config.f.sort_order==IOTOP_SORT_ASC)?IOTOP_SORT_DESC:IOTOP_SORT_ASC;
 			break;
 		case KEY_HOME:
 			if (in_ionice)
 				ionice_cl=1;
 			else
-				hSession->config.f.sort_by=0;
+				config.f.sort_by=0;
 			break;
 		case KEY_END:
 			if (in_ionice)
 				ionice_cl=0;
 			else
-				hSession->config.f.sort_by=IOTOP_SORT_BY_MAX-1;
+				config.f.sort_by=IOTOP_SORT_BY_MAX-1;
 			break;
 		case KEY_RIGHT:
 			if (in_ionice)
 				ionice_cl=!ionice_cl;
 			else
-				if (++hSession->config.f.sort_by==IOTOP_SORT_BY_MAX)
-					hSession->config.f.sort_by=IOTOP_SORT_BY_PID;
+				if (++config.f.sort_by==IOTOP_SORT_BY_MAX)
+					config.f.sort_by=IOTOP_SORT_BY_PID;
 			break;
 		case KEY_LEFT:
 			if (in_ionice)
 				ionice_cl=!ionice_cl;
 			else
-				if (--hSession->config.f.sort_by==-1)
-					hSession->config.f.sort_by=IOTOP_SORT_BY_MAX-1;
+				if (--config.f.sort_by==-1)
+					config.f.sort_by=IOTOP_SORT_BY_MAX-1;
 			break;
 		case KEY_UP:
 			if (in_ionice) {
@@ -566,24 +566,24 @@ static int curses_key(int ch) {
 			break;
 		case 'o':
 		case 'O':
-			hSession->config.f.only=!hSession->config.f.only;
+			config.f.only=!config.f.only;
 			break;
 		case 'p':
 		case 'P':
-			hSession->config.f.processes=!hSession->config.f.processes;
+			config.f.processes=!config.f.processes;
 			break;
 		case 'a':
 		case 'A':
-			hSession->config.f.accumulated=!hSession->config.f.accumulated;
+			config.f.accumulated=!config.f.accumulated;
 			break;
 		case '?':
 		case 'h':
 		case 'H':
-			hSession->config.f.nohelp=!hSession->config.f.nohelp;
+			config.f.nohelp=!config.f.nohelp;
 			break;
 		case 'c':
 		case 'C':
-			hSession->config.f.fullcmdline=!hSession->config.f.fullcmdline;
+			config.f.fullcmdline=!config.f.fullcmdline;
 			break;
 		case 'i':
 		case 'I':
@@ -605,7 +605,7 @@ static int curses_key(int ch) {
 				pid_t pgid=atoi(ionice_id);
 				int who=IOPRIO_WHO_PROCESS;
 
-				if (hSession->config.f.processes) {
+				if (config.f.processes) {
 					pgid=getpgid(pgid);
 					who=IOPRIO_WHO_PGRP;
 				}
@@ -638,7 +638,7 @@ static int curses_key(int ch) {
 				}
 			} else
 				if (ch>='1'&&ch<='9')
-					hSession->config.opts[&hSession->config.f.hidepid-hSession->config.opts+ch-'1']^=1;
+					config.opts[&config.f.hidepid-config.opts+ch-'1']^=1;
 			break;
 		case KEY_CTRL_L:
 			redrawwin(stdscr);
@@ -660,7 +660,7 @@ static void curses_update_callback(iotop_view *view) {
 
 void view_curses_init(void) {
 
-	iotop_set_presentation_method(hSession,curses_update_callback);
+	iotop_set_presentation_method(iotop_get_active_session(),curses_update_callback);
 
 	if (strcmp(getenv("TERM"),"linux")) {
 		if (setlocale(LC_CTYPE,"C.UTF-8"))
@@ -686,8 +686,8 @@ void view_curses_fini(void) {
 
 void view_curses_loop(void) {
 
-	iotop_view * view = &hSession->view;
-	memset(view,0,sizeof(iotop_view));
+	iotop_view view;
+	memset(&view,0,sizeof(iotop_view));
 
 	uint64_t bef = 0;
 	int k=ERR;
@@ -696,10 +696,10 @@ void view_curses_loop(void) {
 	for (;;) {
 		uint64_t now=monotime();
 
-		if (bef+1000*hSession->param.p.delay<now) {
+		if (bef+1000*params.delay<now) {
 			bef=now;
-			refresh = iotop_view_refresh(view);
-			view->act.ts_c=now;
+			refresh = iotop_view_refresh(&view,config.f.processes,filter1);
+			view.act.ts_c=now;
 		}
 
 		if (refresh&&k==ERR)
@@ -712,10 +712,10 @@ void view_curses_loop(void) {
 				break;
 
 			if (kres==0) {
-				iotop_present(hSession);
+				iotop_view_present(iotop_get_active_session(),&view);
 			}
 		}
-		if ((hSession->param.p.iter>-1)&&((--hSession->param.p.iter)==0))
+		if ((params.iter>-1)&&((--params.iter)==0))
 			break;
 		k=getch();
 	}

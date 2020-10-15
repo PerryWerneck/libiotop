@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License along with thi
  *
  */
 
-#include <libiotop-internals.h>
+#include "iotop.h"
 #include <string.h>
 #include <malloc.h>
 #include <stdlib.h>
@@ -57,7 +57,7 @@ int compare(const struct xxxid_stats **ppa,struct xxxid_stats **ppb,struct sort_
 			res=pa->io_prio-pb->io_prio;
 			break;
 		case IOTOP_SORT_BY_COMMAND:
-			res=strcmp(hSession->config.f.fullcmdline?pa->cmdline2:pa->cmdline1,hSession->config.f.fullcmdline?pb->cmdline2:pb->cmdline1);
+			res=strcmp(config.f.fullcmdline?pa->cmdline2:pa->cmdline1,config.f.fullcmdline?pb->cmdline2:pb->cmdline1);
 			break;
 		case IOTOP_SORT_BY_PID:
 			res=pa->tid-pb->tid;
@@ -66,13 +66,13 @@ int compare(const struct xxxid_stats **ppa,struct xxxid_stats **ppb,struct sort_
 			res=strcmp(pa->pw_name,pb->pw_name);
 			break;
 		case IOTOP_SORT_BY_READ:
-			if (hSession->config.f.accumulated)
+			if (config.f.accumulated)
 				res=pa->read_val_acc>pb->read_val_acc?1:pa->read_val_acc<pb->read_val_acc?-1:0;
 			else
 				res=pa->read_val>pb->read_val?1:pa->read_val<pb->read_val?-1:0;
 			break;
 		case IOTOP_SORT_BY_WRITE:
-			if (hSession->config.f.accumulated)
+			if (config.f.accumulated)
 				res=pa->write_val_acc>pb->write_val_acc?1:pa->write_val_acc<pb->write_val_acc?-1:0;
 			else
 				res=pa->write_val>pb->write_val?1:pa->write_val<pb->write_val?-1:0;

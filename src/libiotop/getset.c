@@ -18,33 +18,17 @@ You should have received a copy of the GNU General Public License along with thi
 
  #include <libiotop-internals.h>
 
- void iotop_set_flag(iotop *handle, IOTOP_FLAG flag, int value) {
-	handle->config.opts[flag] = value;
- }
-
- int iotop_get_flag(iotop *handle, IOTOP_FLAG flag) {
- 	return handle->config.opts[flag];
- }
-
  const char * iotop_get_version() {
 	return PACKAGE_VERSION;
- }
-
- void iotop_set_param(iotop *handle, IOTOP_PARAM param, int value) {
-	handle->param.params[param] = value;
  }
 
  void iotop_set_presentation_method(iotop *hSession, iotop_presentation_method callback) {
 	hSession->callback.presentation = callback;
  }
 
- int iotop_get_param(iotop *handle, IOTOP_PARAM param) {
- 	return handle->param.params[param];
- }
-
- void iotop_present(iotop *hSession) {
+ void iotop_view_present(iotop *hSession, iotop_view *view) {
 	if(hSession->callback.presentation) {
-		hSession->callback.presentation(&hSession->view);
+		hSession->callback.presentation(view);
 	}
-	hSession->view.refresh=0;
+	view->refresh=0;
  }

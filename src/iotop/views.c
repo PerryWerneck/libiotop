@@ -22,7 +22,7 @@ void calc_total(const struct xxxid_stats_arr *cs,double *read,double *write) {
 	*read=*write=0;
 
 	for (i=0;i<cs->length;i++) {
-		if (!hSession->config.f.accumulated) {
+		if (!config.f.accumulated) {
 			*read+=cs->arr[i]->read_val;
 			*write+=cs->arr[i]->write_val;
 		} else {
@@ -64,6 +64,9 @@ int value2scale(double val,double mx) {
 }
 
 int create_diff(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,double time_s) {
+
+	iotop * hSession = iotop_get_active_session();
+
 	int diff_size=cs->length;
 	int n=0;
 
@@ -85,7 +88,7 @@ int create_diff(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,double ti
 			c->write_val_acc=0;
 
 			snprintf(temp,sizeof temp,"%i",c->tid);
-			hSession->maxpidlen=hSession->maxpidlen<(int)strlen(temp)?(int)strlen(temp):hSession->maxpidlen;
+			maxpidlen=maxpidlen<(int)strlen(temp)?(int)strlen(temp):maxpidlen;
 			continue;
 		}
 
@@ -111,17 +114,17 @@ int create_diff(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,double ti
 		c->iohist[0]=value2scale(c->blkio_val,100.0);
 
 		snprintf(temp,sizeof temp,"%i",c->tid);
-		hSession->maxpidlen=hSession->maxpidlen<(int)strlen(temp)?(int)strlen(temp):hSession->maxpidlen;
+		maxpidlen=maxpidlen<(int)strlen(temp)?(int)strlen(temp):maxpidlen;
 	}
 
 	return diff_size;
 }
 
 int filter1(struct xxxid_stats *s) {
-	if ((hSession->param.p.user_id!=-1)&&(s->euid!=hSession->param.p.user_id))
+	if ((params.user_id!=-1)&&(s->euid!=params.user_id))
 		return 1;
 
-	if ((hSession->param.p.pid!=-1)&&(s->tid!=hSession->param.p.pid))
+	if ((params.pid!=-1)&&(s->tid!=params.pid))
 		return 1;
 
 	return 0;

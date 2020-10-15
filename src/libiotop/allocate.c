@@ -23,24 +23,16 @@ You should have received a copy of the GNU General Public License along with thi
  // TODO: Remove it after migration.
  iotop * hSession = NULL;
 
+ iotop * iotop_get_active_session() {
+	return hSession;
+ }
+
  iotop * iotop_new() {
 
 	// Allocate handle
 	iotop * handle = malloc(sizeof(iotop));
 	memset(handle,00,sizeof(iotop));
 
-	// Set defaults.
-	handle->config.f.sort_by	=	IOTOP_SORT_BY_GRAPH;
-	handle->config.f.sort_order	=	IOTOP_SORT_DESC;
-	handle->config.f.hidegraph	= 	1;
-
-	// Init params.
-	handle->param.p.iter=-1;
-	handle->param.p.delay=1;
-	handle->param.p.pid=-1;
-	handle->param.p.user_id=-1;
-
-	handle->maxpidlen = 5;
 	handle->nl_sock = -1;
 	nl_init(handle);
 

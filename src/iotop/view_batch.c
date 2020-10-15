@@ -39,7 +39,7 @@ static void view_batch(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,str
 
 	printf(HEADER1_FORMAT,total_read,str_read,"",total_write,str_write,"");
 
-	if (hSession->config.f.timestamp) {
+	if (config.f.timestamp) {
 		time_t t=time(NULL);
 
 		printf(" | %s",ctime(&t));
@@ -50,21 +50,21 @@ static void view_batch(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,str
 
 	printf("\n");
 
-	if (!hSession->config.f.quiet)
+	if (!config.f.quiet)
 		printf("%6s %4s %8s %11s %11s %6s %6s %s\n",
-				hSession->config.f.processes?"PID":"TID","PRIO","USER","DISK READ","DISK WRITE","SWAPIN","IO","COMMAND");
+				config.f.processes?"PID":"TID","PRIO","USER","DISK READ","DISK WRITE","SWAPIN","IO","COMMAND");
 
 	// arr_sort(cs,iotop_sort_cb);
-	iotop_sort_stats(cs, hSession->config.f.sort_by, hSession->config.f.sort_order,0);
+	iotop_sort_stats(cs, config.f.sort_by, config.f.sort_order,0);
 
 	for (i=0;cs->sor&&i<diff_len;i++) {
 		struct xxxid_stats *s=cs->sor[i];
-		double read_val=hSession->config.f.accumulated?s->read_val_acc:s->read_val;
-		double write_val=hSession->config.f.accumulated?s->write_val_acc:s->write_val;
+		double read_val=config.f.accumulated?s->read_val_acc:s->read_val;
+		double write_val=config.f.accumulated?s->write_val_acc:s->write_val;
 		char read_str[4],write_str[4];
 		char *pw_name;
 
-		if (hSession->config.f.only&&!read_val&&!write_val)
+		if (config.f.only&&!read_val&&!write_val)
 			continue;
 
 		humanize_val(&read_val,read_str,1);
@@ -73,7 +73,7 @@ static void view_batch(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,str
 		pw_name=u8strpadt(s->pw_name,10);
 
 		printf("%6i %4s %s %7.2f %-3.3s %7.2f %-3.3s %2.2f %% %2.2f %% %s\n",
-				s->tid,str_ioprio(s->io_prio),pw_name?pw_name:"(null)",read_val,read_str,write_val,write_str,s->swapin_val,s->blkio_val,hSession->config.f.fullcmdline?s->cmdline2:s->cmdline1);
+				s->tid,str_ioprio(s->io_prio),pw_name?pw_name:"(null)",read_val,read_str,write_val,write_str,s->swapin_val,s->blkio_val,config.f.fullcmdline?s->cmdline2:s->cmdline1);
 
 		if (pw_name)
 			free(pw_name);
@@ -87,12 +87,14 @@ void view_batch_fini(void) {
 }
 
 void view_batch_loop(void) {
+
+	/*
 	struct xxxid_stats_arr *ps=NULL;
 	struct xxxid_stats_arr *cs=NULL;
 	struct act_stats act={0};
 
 	for (;;) {
-		cs=fetch_data(hSession->config.f.processes,filter1);
+		cs=fetch_data(config.f.processes,filter1);
 		get_vm_counters(&act.read_bytes,&act.write_bytes);
 		act.ts_c=monotime();
 		view_batch(cs,ps,&act);
@@ -106,10 +108,11 @@ void view_batch_loop(void) {
 		act.ts_o=act.ts_c;
 		act.have_o=1;
 
-		if ((hSession->param.p.iter>-1)&&((--hSession->param.p.iter)==0))
+		if ((params.iter>-1)&&((--params.iter)==0))
 			break;
-		sleep(hSession->param.p.delay);
+		sleep(params.delay);
 	}
 	arr_free(cs);
+	*/
 }
 

@@ -38,7 +38,7 @@ void humanize_val(double *value,char *str,int allow_accum) {
 	const char *u="BKMGTPEZY";
 	size_t p=0;
 
-	if (hSession->config.f.kilobytes) {
+	if (config.f.kilobytes) {
 		p=1;
 		*value/=1000.0;
 	} else {
@@ -51,5 +51,5 @@ void humanize_val(double *value,char *str,int allow_accum) {
 		}
 	}
 
-	snprintf(str,4,"%c%s",u[p],hSession->config.f.accumulated&&allow_accum?"  ":"/s");
+	snprintf(str,4,"%c%s",u[p],config.f.accumulated&&allow_accum?"  ":"/s");
 }

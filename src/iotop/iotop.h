@@ -24,14 +24,11 @@ You should have received a copy of the GNU General Public License along with thi
 #define _DEFAULT_SOURCE
 #endif
 
+#include <config.h>
 #include <sys/types.h>
 #include <stdint.h>
+#include <libiotop.h>
 
-#include <libiotop-internals.h> // TODO: Remove it after migration
-
-//#define VERSION "1.15"
-
-/*
 typedef union {
 	struct _flags {
 		int batch_mode;
@@ -57,72 +54,17 @@ typedef union {
 	} f;
 	int opts[18];
 } config_t;
-*/
 
-/*
 typedef struct {
 	int iter;
 	int delay;
 	int pid;
 	int user_id;
 } params_t;
-*/
 
-//extern config_t config;
-//extern params_t params;
-//extern int maxpidlen;
-
-
-//#define HISTORY_POS 60
-//#define HISTORY_CNT (HISTORY_POS*2)
-
-/*
-struct xxxid_stats {
-	pid_t tid;
-	uint64_t swapin_delay_total; // nanoseconds
-	uint64_t blkio_delay_total; // nanoseconds
-	uint64_t read_bytes;
-	uint64_t write_bytes;
-
-	double blkio_val;
-	double swapin_val;
-	double read_val;
-	double write_val;
-	double read_val_acc;
-	double write_val_acc;
-
-	int io_prio;
-
-	int euid;
-	char *cmdline1;
-	char *cmdline2;
-	char *pw_name;
-
-	uint8_t iohist[HISTORY_CNT];
-};
-*/
-
-//#define PROC_LIST_SZ_INC 1024
-
-/*
-struct xxxid_stats_arr {
-	struct xxxid_stats **arr;
-	struct xxxid_stats **sor;
-	int length;
-	int size;
-};
-
-struct act_stats {
-	uint64_t read_bytes;
-	uint64_t write_bytes;
-	uint64_t read_bytes_o;
-	uint64_t write_bytes_o;
-	uint64_t ts_c;
-	uint64_t ts_o;
-	uint8_t have_o;
-};
-*/
-
+extern config_t config;
+extern params_t params;
+extern int maxpidlen;
 
 typedef void (*view_loop)(void);
 typedef void (*view_init)(void);
@@ -137,26 +79,6 @@ void view_curses_init(void);
 void view_curses_fini(void);
 
 unsigned int curses_sleep(unsigned int seconds);
-
-/*
-enum {
-	SORT_BY_PID,
-	SORT_BY_PRIO,
-	SORT_BY_USER,
-	SORT_BY_READ,
-	SORT_BY_WRITE,
-	SORT_BY_SWAPIN,
-	SORT_BY_IO,
-	SORT_BY_GRAPH,
-	SORT_BY_COMMAND,
-	SORT_BY_MAX
-};
-
-enum {
-	SORT_DESC,
-	SORT_ASC
-};
-*/
 
 extern const char *str_ioprio_class[];
 
@@ -175,6 +97,9 @@ int create_diff(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,double ti
 int value2scale(double val,double mx);
 
 int64_t monotime(void);
+int filter1(struct xxxid_stats *s);
+void iotop_sort_stats(struct xxxid_stats_arr *cs, IOTOP_SORT_OPTION option, IOTOP_SORT_ORDER order, int grlen);
+char *u8strpadt(const char *s,size_t len);
 
 #ifndef KEY_CTRL_L
 #define KEY_CTRL_L 014

@@ -24,10 +24,20 @@ You should have received a copy of the GNU General Public License along with thi
 #include <sys/types.h>
 
 static const char *progname=NULL;
-// int maxpidlen=5;
+int maxpidlen=5;
 
-//config_t config;
-//params_t params;
+config_t config = {
+	.f.sort_by		=	IOTOP_SORT_BY_GRAPH,
+	.f.sort_order	=	IOTOP_SORT_DESC,
+	.f.hidegraph	= 	1
+};
+
+params_t params = {
+	.iter			=	-1,
+	.delay			=	1,
+	.pid			=	-1,
+	.user_id		=	-1
+};
 
 view_init v_init_cb=view_curses_init;
 view_fini v_fini_cb=view_curses_fini;
@@ -150,20 +160,20 @@ static void parse_args(int argc,char *argv[]) {
 			case 'H':
 			case 'c':
 			case '1' ... '9':
-				iotop_set_flag(hSession,(IOTOP_FLAG) (strchr(str_opt,c)-str_opt),1);
+				config.opts[(unsigned int)(strchr(str_opt,c)-str_opt)]=1;
 				break;
 			case 'n':
-				iotop_set_param(hSession,IOTOP_PARAM_ITER,atoi(optarg));
+				params.iter = atoi(optarg);
 				break;
 			case 'd':
-				iotop_set_param(hSession,IOTOP_PARAM_DELAY,atoi(optarg));
+				params.delay = atoi(optarg);
 				break;
 			case 'p':
-				iotop_set_param(hSession,IOTOP_PARAM_PID,atoi(optarg));
+				params.pid = atoi(optarg);
 				break;
 			case 'u':
 				if (isdigit(optarg[0]))
-					iotop_set_param(hSession,IOTOP_PARAM_USER_ID,atoi(optarg));
+					params.user_id = atoi(optarg);
 				else {
 					struct passwd *pwd=getpwnam(optarg);
 
@@ -171,7 +181,7 @@ static void parse_args(int argc,char *argv[]) {
 						fprintf(stderr,"%s: user %s not found\n",progname,optarg);
 						exit(EXIT_FAILURE);
 					}
-					iotop_set_param(hSession,IOTOP_PARAM_USER_ID,pwd->pw_uid);
+					params.user_id = pwd->pw_uid;
 				}
 				break;
 			default:
@@ -183,12 +193,14 @@ static void parse_args(int argc,char *argv[]) {
 void sig_handler(int signo) {
 	if (signo==SIGINT) {
 		v_fini_cb();
-		iotop_free(hSession);
+		iotop_free(iotop_get_active_session());
 		exit(EXIT_SUCCESS);
 	}
 }
 
 int main(int argc,char *argv[]) {
+
+
 
 	progname=argv[0];
 
@@ -203,10 +215,10 @@ int main(int argc,char *argv[]) {
 	if (signal(SIGINT,sig_handler)==SIG_ERR)
 		perror("signal");
 
-	if (hSession->config.f.timestamp||hSession->config.f.quiet)
-		hSession->config.f.batch_mode=1;
+	if (config.f.timestamp||config.f.quiet)
+		config.f.batch_mode=1;
 
-	if (hSession->config.f.batch_mode) {
+	if (config.f.batch_mode) {
 		v_init_cb=view_batch_init;
 		v_fini_cb=view_batch_fini;
 		v_loop_cb=view_batch_loop;

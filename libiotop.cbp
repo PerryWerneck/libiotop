@@ -37,6 +37,9 @@
 		<Unit filename="src/iotop/main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="src/iotop/sort.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/iotop/utils.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -65,9 +68,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/libiotop/refresh.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/libiotop/sort.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/libiotop/utils.c">

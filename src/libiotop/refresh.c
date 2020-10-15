@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License along with thi
 
  #include <libiotop-internals.h>
 
- int iotop_view_refresh(iotop_view *view) {
+ int iotop_view_refresh(iotop_view *view, int processes, const iotop_filter_method filter) {
 
 	if (view->ps)
 		arr_free(view->ps);
@@ -30,10 +30,10 @@ You should have received a copy of the GNU General Public License along with thi
 		view->act.have_o=1;
 	view->act.ts_o=view->act.ts_c;
 
-	view->cs=fetch_data(hSession->config.f.processes,filter1);
+	view->cs=fetch_data(processes,filter);
 	if (!view->ps) {
 		view->ps=view->cs;
-		view->cs=fetch_data(hSession->config.f.processes,filter1);
+		view->cs=fetch_data(processes,filter);
 	}
 	get_vm_counters(&view->act.read_bytes,&view->act.write_bytes);
 
