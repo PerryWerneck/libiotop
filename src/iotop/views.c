@@ -11,7 +11,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 */
 
-#include <libiotop-internals.h>
+#include "iotop.h"
 
 #include <stdio.h>
 #include <string.h>

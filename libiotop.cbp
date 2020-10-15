@@ -46,6 +46,9 @@
 		<Unit filename="src/iotop/view_curses.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="src/iotop/views.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/libiotop/allocate.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -65,9 +68,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/libiotop/utils.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/libiotop/views.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/libiotop/vmstat.c">
