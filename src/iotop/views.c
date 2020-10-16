@@ -63,9 +63,10 @@ int value2scale(double val,double mx) {
 	return 0;
 }
 
+/*
 int create_diff(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,double time_s) {
 
-	iotop * hSession = iotop_get_active_session();
+//	iotop * hSession = iotop_get_active_session();
 
 	int diff_size=cs->length;
 	int n=0;
@@ -119,6 +120,7 @@ int create_diff(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,double ti
 
 	return diff_size;
 }
+*/
 
 int filter1(struct xxxid_stats *s) {
 	if ((params.user_id!=-1)&&(s->euid!=params.user_id))

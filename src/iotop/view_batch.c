@@ -54,7 +54,13 @@ static void view_stat(const struct xxxid_stats *s) {
 
 }
 
-static void view_batch(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,struct act_stats *act) {
+static void update_callback(iotop *hSession) {
+
+	iotop_view * view = iotop_get_view(hSession);
+
+	struct xxxid_stats_arr *cs = view->cs;
+//	struct xxxid_stats_arr *ps	= view->ps;
+	struct act_stats *act = &view->act;
 
 	double time_s=TIMEDIFF_IN_S(act->ts_o,act->ts_c);
 //	int diff_len=create_diff(cs,ps,time_s);
@@ -89,54 +95,13 @@ static void view_batch(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,str
 		printf("%6s %4s %8s %11s %11s %6s %6s %s\n",
 				config.f.processes?"PID":"TID","PRIO","USER","DISK READ","DISK WRITE","SWAPIN","IO","COMMAND");
 
-	// arr_sort(cs,iotop_sort_cb);
 	iotop_sort_stats(cs, config.f.sort_by, config.f.sort_order,0);
-	iotop_stat_foreach(iotop_get_active_session(),view_stat);
+	iotop_stat_foreach(hSession,view_stat);
 
-	/*
-	for (i=0;cs->sor&&i<diff_len;i++) {
-		struct xxxid_stats *s=cs->sor[i];
-		double read_val=config.f.accumulated?s->read_val_acc:s->read_val;
-		double write_val=config.f.accumulated?s->write_val_acc:s->write_val;
-		char read_str[4],write_str[4];
-		char *pw_name;
-
-		if (config.f.only&&!read_val&&!write_val)
-			continue;
-
-		humanize_val(&read_val,read_str,1);
-		humanize_val(&write_val,write_str,1);
-
-		pw_name=u8strpadt(s->pw_name,10);
-
-		printf("%6i %4s %s %7.2f %-3.3s %7.2f %-3.3s %2.2f %% %2.2f %% %s\n",
-				s->tid,
-				str_ioprio(s->io_prio),
-				pw_name?pw_name:"(null)",
-				read_val,
-				read_str,
-				write_val,
-				write_str,
-				s->swapin_val,
-				s->blkio_val,
-				config.f.fullcmdline ? s->cmdline2 : s->cmdline1
-		);
-
-		if (pw_name)
-			free(pw_name);
-	}
-	*/
-}
-
-static void batch_update_callback(iotop *hSession) {
-
-	// TODO: Refactory view_batch
-	iotop_view * view = iotop_get_view(hSession);
-	view_batch(view->cs,view->ps,&view->act);
 }
 
 void view_batch_init(void) {
-	iotop_set_presentation_method(iotop_get_active_session(),batch_update_callback);
+	iotop_set_presentation_method(iotop_get_active_session(),update_callback);
 }
 
 void view_batch_fini(void) {
@@ -153,34 +118,9 @@ void view_batch_loop(void) {
 
 		if ((params.iter>-1)&&((--params.iter)==0))
 			break;
+
 		sleep(params.delay);
 	}
 
-	/*
-	struct xxxid_stats_arr *ps=NULL;
-	struct xxxid_stats_arr *cs=NULL;
-	struct act_stats act={0};
-
-	for (;;) {
-		cs=fetch_data(config.f.processes,filter1);
-		get_vm_counters(&act.read_bytes,&act.write_bytes);
-		act.ts_c=monotime();
-		view_batch(cs,ps,&act);
-
-		if (ps)
-			arr_free(ps);
-
-		ps=cs;
-		act.read_bytes_o=act.read_bytes;
-		act.write_bytes_o=act.write_bytes;
-		act.ts_o=act.ts_c;
-		act.have_o=1;
-
-		if ((params.iter>-1)&&((--params.iter)==0))
-			break;
-		sleep(params.delay);
-	}
-	arr_free(cs);
-	*/
 }
 

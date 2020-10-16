@@ -12,11 +12,11 @@ You should have received a copy of the GNU General Public License along with thi
 */
 
 /**
- * @brief Implement library internal sort.
+ * @brief Implement library sort.
  *
  */
 
-#include "iotop.h"
+#include <libiotop-internals.h>
 #include <string.h>
 #include <malloc.h>
 #include <stdlib.h>
@@ -56,27 +56,35 @@ static int compare(const struct xxxid_stats **ppa,struct xxxid_stats **ppb,struc
 		case IOTOP_SORT_BY_PRIO:
 			res=pa->io_prio-pb->io_prio;
 			break;
-		case IOTOP_SORT_BY_COMMAND:
-			res=strcmp(config.f.fullcmdline?pa->cmdline2:pa->cmdline1,config.f.fullcmdline?pb->cmdline2:pb->cmdline1);
+
+		// @fixme (perry#1#): How to decide here? The config is an application attribute.
+//		case IOTOP_SORT_BY_COMMAND:
+//			res=strcmp(config.f.fullcmdline?pa->cmdline2:pa->cmdline1,config.f.fullcmdline?pb->cmdline2:pb->cmdline1);
 			break;
+
 		case IOTOP_SORT_BY_PID:
 			res=pa->tid-pb->tid;
 			break;
 		case IOTOP_SORT_BY_USER:
 			res=strcmp(pa->pw_name,pb->pw_name);
 			break;
-		case IOTOP_SORT_BY_READ:
-			if (config.f.accumulated)
-				res=pa->read_val_acc>pb->read_val_acc?1:pa->read_val_acc<pb->read_val_acc?-1:0;
-			else
-				res=pa->read_val>pb->read_val?1:pa->read_val<pb->read_val?-1:0;
+
+		// @fixme (perry#1#): How to decide here? The config is an application attribute.
+//		case IOTOP_SORT_BY_READ:
+//			if (config.f.accumulated)
+//				res=pa->read_val_acc>pb->read_val_acc?1:pa->read_val_acc<pb->read_val_acc?-1:0;
+//			else
+//				res=pa->read_val>pb->read_val?1:pa->read_val<pb->read_val?-1:0;
 			break;
-		case IOTOP_SORT_BY_WRITE:
-			if (config.f.accumulated)
-				res=pa->write_val_acc>pb->write_val_acc?1:pa->write_val_acc<pb->write_val_acc?-1:0;
-			else
-				res=pa->write_val>pb->write_val?1:pa->write_val<pb->write_val?-1:0;
+
+		// @fixme (perry#1#): How to decide here? The config is an application attribute.
+//		case IOTOP_SORT_BY_WRITE:
+//			if (config.f.accumulated)
+//				res=pa->write_val_acc>pb->write_val_acc?1:pa->write_val_acc<pb->write_val_acc?-1:0;
+//			else
+//				res=pa->write_val>pb->write_val?1:pa->write_val<pb->write_val?-1:0;
 			break;
+
 		case IOTOP_SORT_BY_SWAPIN:
 			res=pa->swapin_val>pb->swapin_val?1:pa->swapin_val<pb->swapin_val?-1:0;
 			break;
@@ -93,7 +101,9 @@ static int compare(const struct xxxid_stats **ppa,struct xxxid_stats **ppb,struc
 }
 
 
-void iotop_sort_stats(struct xxxid_stats_arr *pa, IOTOP_SORT_OPTION option, IOTOP_SORT_ORDER order, int grlen) {
+void iotop_sort(iotop *hSession, IOTOP_SORT_OPTION option, IOTOP_SORT_ORDER order, int grlen) {
+
+	struct xxxid_stats_arr *pa = hSession->view.cs;
 
 	if (!pa)
 		return;

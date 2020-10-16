@@ -167,6 +167,9 @@ You should have received a copy of the GNU General Public License along with thi
 	/// @brief Present
 	IOTOP_API void iotop_present(iotop *hSession);
 
+	/// @brief sort results.
+	IOTOP_API void iotop_sort(iotop *hSession, IOTOP_SORT_OPTION option, IOTOP_SORT_ORDER order, int grlen);
+
 	/// @brief Get view.
 	IOTOP_API iotop_view * iotop_get_view(iotop *hSession);
 
