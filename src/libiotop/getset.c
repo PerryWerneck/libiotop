@@ -22,17 +22,6 @@ You should have received a copy of the GNU General Public License along with thi
 	return PACKAGE_VERSION;
  }
 
- void iotop_set_presentation_method(iotop *hSession, iotop_presentation_method callback) {
-	hSession->callback.presentation = callback;
- }
-
- void iotop_present(iotop *hSession) {
-	if(hSession->callback.presentation) {
-		hSession->callback.presentation(&hSession->view);
-	}
-	hSession->view.refresh=0;
- }
-
  iotop_view * iotop_get_view(iotop *hSession) {
 	return &hSession->view;
  }

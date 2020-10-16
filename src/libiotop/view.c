@@ -101,6 +101,17 @@ You should have received a copy of the GNU General Public License along with thi
 	return diff_size;
  }
 
+ void iotop_set_presentation_method(iotop *hSession, iotop_presentation_method callback) {
+	hSession->callback.presentation = callback;
+ }
+
+ void iotop_present(iotop *hSession) {
+	if(hSession->callback.presentation) {
+		hSession->callback.presentation(hSession);
+	}
+	hSession->view.refresh=0;
+ }
+
  int iotop_get_diff_len(iotop *hSession) {
  	double time_s=iotop_get_time_s(hSession);
 	return create_diff(hSession, hSession->view.cs, hSession->view.ps, time_s);

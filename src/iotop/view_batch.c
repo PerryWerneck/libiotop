@@ -57,12 +57,12 @@ static void view_stat(const struct xxxid_stats *s) {
 static void view_batch(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,struct act_stats *act) {
 
 	double time_s=TIMEDIFF_IN_S(act->ts_o,act->ts_c);
-	int diff_len=create_diff(cs,ps,time_s);
+//	int diff_len=create_diff(cs,ps,time_s);
 	double total_a_read,total_a_write;
 	char str_a_read[4],str_a_write[4];
 	double total_read,total_write;
 	char str_read[4],str_write[4];
-	int i;
+//	int i;
 
 	calc_total(cs,&total_read,&total_write);
 	calc_a_total(act,&total_a_read,&total_a_write,time_s);
@@ -128,9 +128,10 @@ static void view_batch(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,str
 	*/
 }
 
-static void batch_update_callback(iotop_view *view) {
+static void batch_update_callback(iotop *hSession) {
 
 	// TODO: Refactory view_batch
+	iotop_view * view = iotop_get_view(hSession);
 	view_batch(view->cs,view->ps,&view->act);
 }
 

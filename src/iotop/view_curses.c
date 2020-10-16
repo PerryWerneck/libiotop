@@ -92,7 +92,11 @@ static const int column_width[]={
 static void view_curses(struct xxxid_stats_arr *cs, struct xxxid_stats_arr *ps,struct act_stats *act,int roll) {
 	double time_s=TIMEDIFF_IN_S(act->ts_o,act->ts_c);
 	static const uint8_t iohist_z[HISTORY_CNT]={0};
-	int diff_len=create_diff(cs,ps,time_s);
+
+//	int diff_len=create_diff(cs,ps,time_s);
+	int diff_len = iotop_get_diff_len(iotop_get_active_session());
+
+
 	double total_read,total_write;
 	double total_a_read,total_a_write;
 	char pg_t_r[HISTORY_POS*5]={0};
@@ -651,12 +655,12 @@ static int curses_key(int ch) {
 	return 0;
 }
 
-static void curses_update_callback(iotop_view *view) {
+static void curses_update_callback(iotop *hSession) {
 
 	// TODO: Refactory view_curses
+	iotop_view * view = iotop_get_view(hSession);
 	view_curses(view->cs,view->ps,&view->act,view->refresh);
 }
-
 
 void view_curses_init(void) {
 

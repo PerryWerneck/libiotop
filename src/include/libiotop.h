@@ -151,7 +151,7 @@ You should have received a copy of the GNU General Public License along with thi
 	typedef struct _iotop iotop;
 	typedef struct _iotop_view iotop_view;
 
-	typedef void (*iotop_presentation_method)(iotop_view *view);
+	typedef void (*iotop_presentation_method)(iotop * handle);
 	typedef int (*iotop_filter_method)(struct xxxid_stats *s);
 	typedef void (*iotop_present_stat)(const struct xxxid_stats *s);
 
@@ -195,6 +195,8 @@ You should have received a copy of the GNU General Public License along with thi
 	IOTOP_API int iotop_refresh(iotop *handle, int processes, const iotop_filter_method filter);
 
 	struct xxxid_stats *arr_find(struct xxxid_stats_arr *pa,pid_t tid);
+
+	IOTOP_API int iotop_get_diff_len(iotop *hSession);
 
 	/* ioprio.c */
 	int get_ioprio(pid_t pid);
