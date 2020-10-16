@@ -20,7 +20,42 @@ You should have received a copy of the GNU General Public License along with thi
 
 #define TIMEDIFF_IN_S(sta,end) ((((sta)==(end))||(sta)==0)?0.0001:(((end)-(sta))/1000.0))
 
+static void view_stat(const struct xxxid_stats *s) {
+
+	double read_val=config.f.accumulated?s->read_val_acc:s->read_val;
+	double write_val=config.f.accumulated?s->write_val_acc:s->write_val;
+
+	char read_str[4],write_str[4];
+	char *pw_name;
+
+	if (config.f.only&&!read_val&&!write_val)
+		return;
+
+	humanize_val(&read_val,read_str,1);
+	humanize_val(&write_val,write_str,1);
+
+	pw_name=u8strpadt(s->pw_name,10);
+
+	printf("%6i %4s %s %7.2f %-3.3s %7.2f %-3.3s %2.2f %% %2.2f %% %s\n",
+			s->tid,
+			str_ioprio(s->io_prio),
+			pw_name?pw_name:"(null)",
+			read_val,
+			read_str,
+			write_val,
+			write_str,
+			s->swapin_val,
+			s->blkio_val,
+			config.f.fullcmdline ? s->cmdline2 : s->cmdline1
+	);
+
+	if (pw_name)
+		free(pw_name);
+
+}
+
 static void view_batch(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,struct act_stats *act) {
+
 	double time_s=TIMEDIFF_IN_S(act->ts_o,act->ts_c);
 	int diff_len=create_diff(cs,ps,time_s);
 	double total_a_read,total_a_write;
@@ -56,7 +91,9 @@ static void view_batch(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,str
 
 	// arr_sort(cs,iotop_sort_cb);
 	iotop_sort_stats(cs, config.f.sort_by, config.f.sort_order,0);
+	iotop_stat_foreach(iotop_get_active_session(),view_stat);
 
+	/*
 	for (i=0;cs->sor&&i<diff_len;i++) {
 		struct xxxid_stats *s=cs->sor[i];
 		double read_val=config.f.accumulated?s->read_val_acc:s->read_val;
@@ -73,20 +110,50 @@ static void view_batch(struct xxxid_stats_arr *cs,struct xxxid_stats_arr *ps,str
 		pw_name=u8strpadt(s->pw_name,10);
 
 		printf("%6i %4s %s %7.2f %-3.3s %7.2f %-3.3s %2.2f %% %2.2f %% %s\n",
-				s->tid,str_ioprio(s->io_prio),pw_name?pw_name:"(null)",read_val,read_str,write_val,write_str,s->swapin_val,s->blkio_val,config.f.fullcmdline?s->cmdline2:s->cmdline1);
+				s->tid,
+				str_ioprio(s->io_prio),
+				pw_name?pw_name:"(null)",
+				read_val,
+				read_str,
+				write_val,
+				write_str,
+				s->swapin_val,
+				s->blkio_val,
+				config.f.fullcmdline ? s->cmdline2 : s->cmdline1
+		);
 
 		if (pw_name)
 			free(pw_name);
 	}
+	*/
+}
+
+static void batch_update_callback(iotop_view *view) {
+
+	// TODO: Refactory view_batch
+	view_batch(view->cs,view->ps,&view->act);
 }
 
 void view_batch_init(void) {
+	iotop_set_presentation_method(iotop_get_active_session(),batch_update_callback);
 }
 
 void view_batch_fini(void) {
 }
 
 void view_batch_loop(void) {
+
+	iotop * hSession = iotop_get_active_session();
+
+	for (;;) {
+
+		iotop_refresh(hSession,config.f.processes,filter1);
+		iotop_present(hSession);
+
+		if ((params.iter>-1)&&((--params.iter)==0))
+			break;
+		sleep(params.delay);
+	}
 
 	/*
 	struct xxxid_stats_arr *ps=NULL;

@@ -17,26 +17,37 @@ You should have received a copy of the GNU General Public License along with thi
  */
 
  #include <libiotop-internals.h>
+ #include <time.h>
 
- int iotop_view_refresh(iotop_view *view, int processes, const iotop_filter_method filter) {
+ int iotop_refresh(iotop *hSession, int processes, const iotop_filter_method filter) {
 
-	if (view->ps)
-		arr_free(view->ps);
+	if (hSession->view.ps)
+		arr_free(hSession->view.ps);
 
-	view->ps = view->cs;
-	view->act.read_bytes_o=view->act.read_bytes;
-	view->act.write_bytes_o=view->act.write_bytes;
-	if (view->act.ts_c)
-		view->act.have_o=1;
-	view->act.ts_o=view->act.ts_c;
+	hSession->view.ps = hSession->view.cs;
+	hSession->view.act.read_bytes_o=hSession->view.act.read_bytes;
+	hSession->view.act.write_bytes_o=hSession->view.act.write_bytes;
+	if (hSession->view.act.ts_c)
+		hSession->view.act.have_o=1;
+	hSession->view.act.ts_o=hSession->view.act.ts_c;
 
-	view->cs=fetch_data(processes,filter);
-	if (!view->ps) {
-		view->ps=view->cs;
-		view->cs=fetch_data(processes,filter);
+	hSession->view.cs=fetch_data(processes,filter);
+	if (!hSession->view.ps) {
+		hSession->view.ps=hSession->view.cs;
+		hSession->view.cs=fetch_data(processes,filter);
 	}
-	get_vm_counters(&view->act.read_bytes,&view->act.write_bytes);
 
-	return view->refresh=1;
+	get_vm_counters(&hSession->view.act.read_bytes,&hSession->view.act.write_bytes);
+
+	// Monotime
+	{
+		struct timespec ts;
+		clock_gettime(CLOCK_MONOTONIC,&ts);
+		hSession->view.act.ts_c = ts.tv_sec*1000;
+		hSession->view.act.ts_c += ts.tv_nsec/1000000;
+	}
+
+	return hSession->view.refresh=1;
+
 }
 

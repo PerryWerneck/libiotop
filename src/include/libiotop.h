@@ -153,15 +153,22 @@ You should have received a copy of the GNU General Public License along with thi
 
 	typedef void (*iotop_presentation_method)(iotop_view *view);
 	typedef int (*iotop_filter_method)(struct xxxid_stats *s);
+	typedef void (*iotop_present_stat)(const struct xxxid_stats *s);
 
 	/// @brief Get active session.
 	IOTOP_API iotop * iotop_get_active_session();
+
+	/// @brief Navigate thru stats.
+	IOTOP_API void iotop_stat_foreach(iotop *handle, const iotop_present_stat callback);
 
 	/// @brief Set 'view' method.
 	IOTOP_API void iotop_set_presentation_method(iotop *hSession, const iotop_presentation_method callback);
 
 	/// @brief Present
-	IOTOP_API void iotop_view_present(iotop *hSession, iotop_view *view);
+	IOTOP_API void iotop_present(iotop *hSession);
+
+	/// @brief Get view.
+	IOTOP_API iotop_view * iotop_get_view(iotop *hSession);
 
 	/// @brief Get library version.
 	IOTOP_API const char * iotop_get_version();
@@ -179,13 +186,13 @@ You should have received a copy of the GNU General Public License along with thi
 	IOTOP_API int 	  iotop_get_flag(iotop *handle, IOTOP_FLAG flag);
 
 	/// @brief Set param.
-	IOTOP_API void	  iotop_set_param(iotop *handle, IOTOP_PARAM param, int value);
+	//IOTOP_API void	  iotop_set_param(iotop *handle, IOTOP_PARAM param, int value);
 
 	/// @brief Get param.
-	IOTOP_API int 	  iotop_get_param(iotop *handle, IOTOP_PARAM param);
+	//IOTOP_API int 	  iotop_get_param(iotop *handle, IOTOP_PARAM param);
 
 	/// @brief Update values.
-	IOTOP_API int iotop_view_refresh(iotop_view *view, int processes, const iotop_filter_method filter);
+	IOTOP_API int iotop_refresh(iotop *handle, int processes, const iotop_filter_method filter);
 
 	struct xxxid_stats *arr_find(struct xxxid_stats_arr *pa,pid_t tid);
 
@@ -196,6 +203,5 @@ You should have received a copy of the GNU General Public License along with thi
 	int set_ioprio(int which,int who,int ioprio_class,int ioprio_prio);
 	int ioprio2class(int ioprio);
 	int ioprio2prio(int ioprio);
-
 
 #endif // LIBIOTOP_H_INCLUDED

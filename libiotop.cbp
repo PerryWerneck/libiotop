@@ -73,6 +73,9 @@
 		<Unit filename="src/libiotop/utils.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="src/libiotop/view.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/libiotop/vmstat.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -686,8 +686,7 @@ void view_curses_fini(void) {
 
 void view_curses_loop(void) {
 
-	iotop_view view;
-	memset(&view,0,sizeof(iotop_view));
+	iotop * hSession = iotop_get_active_session();
 
 	uint64_t bef = 0;
 	int k=ERR;
@@ -698,8 +697,7 @@ void view_curses_loop(void) {
 
 		if (bef+1000*params.delay<now) {
 			bef=now;
-			refresh = iotop_view_refresh(&view,config.f.processes,filter1);
-			view.act.ts_c=now;
+			refresh = iotop_refresh(hSession,config.f.processes,filter1);
 		}
 
 		if (refresh&&k==ERR)
@@ -712,7 +710,7 @@ void view_curses_loop(void) {
 				break;
 
 			if (kres==0) {
-				iotop_view_present(iotop_get_active_session(),&view);
+				iotop_present(hSession);
 			}
 		}
 		if ((params.iter>-1)&&((--params.iter)==0))
