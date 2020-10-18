@@ -154,6 +154,7 @@ You should have received a copy of the GNU General Public License along with thi
 	typedef void (*iotop_presentation_method)(iotop * handle);
 	typedef int (*iotop_filter_method)(struct xxxid_stats *s);
 	typedef void (*iotop_present_stat)(const struct xxxid_stats *s);
+	typedef int (*iotop_compare_method)(iotop *, const struct xxxid_stats *, struct xxxid_stats *, void *);
 
 	/// @brief Get active session.
 	IOTOP_API iotop * iotop_get_active_session();
