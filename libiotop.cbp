@@ -23,13 +23,13 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="`pkg-config --cflags ncurses`" />
+			<Add option="`pkg-config --cflags ncursesw`" />
 			<Add option="-std=gnu90 -Wall -Wextra" />
 			<Add option="-O3 -fno-stack-protector -mno-stackrealign" />
 			<Add directory="src/include" />
 		</Compiler>
 		<Linker>
-			<Add option="`pkg-config --libs ncurses`" />
+			<Add option="`pkg-config --libs ncursesw`" />
 		</Linker>
 		<Unit filename="src/include/libiotop-internals.h" />
 		<Unit filename="src/include/libiotop.h" />
